@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.minidev</groupId>
 	<artifactId>parent</artifactId>
-	<version>1.0.9-1</version>
+	<version>1.0.9-2</version>
 	<name>Minidev super pom</name>
 	<description>minidev common properties.</description>
 	<packaging>pom</packaging>
@@ -115,9 +115,9 @@
 	</build>
 
 	<scm>
-		<connection>scm:svn:http://json-smart.googlecode.com/svn/branches/${project.version}/</connection>
-		<developerConnection>scm:svn:https://json-smart.googlecode.com/svn/branches/${project.version}/</developerConnection>
-		<url>http://json-smart.googlecode.com/svn/branches/${project.version}/</url>
+		<connection>scm:git:https://code.google.com/p/json-smart.v1/</connection>
+		<developerConnection>scm:git:https://code.google.com/p/json-smart.v1/</developerConnection>
+		<url>scm:git:https://code.google.com/p/json-smart.v1/</url>
 	</scm>
 
 	<reporting>

@@ -74,6 +74,11 @@ class JSONStreamParser extends JSONBaseParser {
 			handler.startJSON();
 			result = readMain(stopX);
 			handler.endJSON();
+			if (checkTaillingData) {
+				skipSpace();
+				if (c != EOI)
+					throw new ParseException(pos - 1, ERROR_UNEXPECTED_TOKEN, c);
+			}
 		} catch (IOException e) {
 			throw new ParseException(pos, e);
 		}
