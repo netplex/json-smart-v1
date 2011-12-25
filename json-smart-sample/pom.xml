@@ -1,0 +1,29 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<!-- this POM is released under an Apache 2.0 license -->
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>json-smart-sample</artifactId>
+	<packaging>jar</packaging>
+
+	<parent>
+		<groupId>net.minidev</groupId>
+		<artifactId>parent</artifactId>
+		<version>1.0.9-1</version>
+		<relativePath>../parent/pom.xml</relativePath>
+	</parent>
+
+	<name>JSON Small and Fast Parser</name>
+
+	<description>
+	Json-smart Sample code.
+	</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>net.minidev</groupId>
+			<artifactId>json-smart</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+</project>
