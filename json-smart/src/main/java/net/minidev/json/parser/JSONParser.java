@@ -68,7 +68,7 @@ public class JSONParser {
 	 * 
 	 * @since 1.0.9-2
 	 */
-	public final static int REJECT_TAILLING_DATA = 256;
+	public final static int ACCEPT_TAILLING_DATA = 256;
 	/**
 	 * smart mode, fastest parsing mode. accept lots of non standard json syntax
 	 * 
@@ -82,7 +82,7 @@ public class JSONParser {
 	 * 
 	 * @since 1.0.6
 	 */
-	public final static int MODE_RFC4627 = USE_INTEGER_STORAGE | USE_HI_PRECISION_FLOAT;
+	public final static int MODE_RFC4627 = USE_INTEGER_STORAGE | USE_HI_PRECISION_FLOAT | ACCEPT_TAILLING_DATA;
 	/**
 	 * Parse Object like json-simple
 	 * 
@@ -90,13 +90,13 @@ public class JSONParser {
 	 * 
 	 * @since 1.0.7
 	 */
-	public final static int MODE_JSON_SIMPLE = ACCEPT_USELESS_COMMA | USE_HI_PRECISION_FLOAT;
+	public final static int MODE_JSON_SIMPLE = ACCEPT_USELESS_COMMA | USE_HI_PRECISION_FLOAT | ACCEPT_TAILLING_DATA;
 	/**
 	 * Strictest parsing mode
 	 * 
 	 * @since 1.0.9-2
 	 */
-	public final static int MODE_STRICTEST = USE_INTEGER_STORAGE | USE_HI_PRECISION_FLOAT | REJECT_TAILLING_DATA;
+	public final static int MODE_STRICTEST = USE_INTEGER_STORAGE | USE_HI_PRECISION_FLOAT;
 	
 	/**
 	 * Default json-smart processing mode

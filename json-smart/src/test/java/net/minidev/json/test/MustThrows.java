@@ -17,4 +17,18 @@ public class MustThrows {
 			TestCase.assertEquals(execptionType, e.getErrorType());
 		}
 	}
+	
+	public static void testStrictestInvalidJson(String json, int execptionType) throws Exception {
+		JSONParser p = new JSONParser(JSONParser.MODE_STRICTEST);
+		try {
+			p.parse(json);
+			TestCase.assertFalse("Exception Should Occure parssing:" + json, true);
+		} catch (ParseException e) {
+			if (execptionType == -1)
+				execptionType = e.getErrorType();
+			TestCase.assertEquals(execptionType, e.getErrorType());
+		}
+	}
+
+	
 }

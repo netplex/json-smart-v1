@@ -78,7 +78,7 @@ abstract class JSONBaseParser {
 		this.acceptLeadinZero = (permissiveMode & JSONParser.ACCEPT_LEADING_ZERO) > 0;
 		this.acceptUselessComma = (permissiveMode & JSONParser.ACCEPT_USELESS_COMMA) > 0;
 		this.useHiPrecisionFloat = (permissiveMode & JSONParser.USE_HI_PRECISION_FLOAT) > 0;
-		this.checkTaillingData = (permissiveMode & JSONParser.REJECT_TAILLING_DATA) > 0;
+		this.checkTaillingData = (permissiveMode & JSONParser.ACCEPT_TAILLING_DATA) == 0;
 	}
 
 	public void checkLeadinZero() throws ParseException {
