@@ -38,8 +38,8 @@ class JSONStreamParser extends JSONBaseParser {
 	private Reader in;
 
 	// len
-	public JSONStreamParser(int permissifMode) {
-		super(permissifMode);
+	public JSONStreamParser(int permissiveMode) {
+		super(permissiveMode);
 	}
 
 	/**
