@@ -21,6 +21,7 @@ import static net.minidev.json.parser.JSONParser.DEFAULT_PERMISSIVE_MODE;
 import static net.minidev.json.parser.JSONParser.MODE_RFC4627;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -55,6 +56,50 @@ public class JSONValue {
 	 * Used for validating Json inputs
 	 */
 	private final static FakeContainerFactory FACTORY_FAKE_COINTAINER = new FakeContainerFactory();
+
+	/**
+	 * Parse JSON text into java object from the input source. Please use
+	 * parseWithException() if you don't want to ignore the exception. if you
+	 * want strict input check use parseStrict()
+	 * 
+	 * @see JSONParser#parse(Reader)
+	 * @see #parseWithException(Reader)
+	 * 
+	 * @since 1.0.9-2
+	 * 
+	 * @return Instance of the following: JSONObject, JSONArray, String,
+	 *         java.lang.Number, java.lang.Boolean, null
+	 * 
+	 */
+	public static Object parse(byte[] in) {
+		try {
+			return new JSONParser(DEFAULT_PERMISSIVE_MODE).parse(in);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	/**
+	 * Parse JSON text into java object from the input source. Please use
+	 * parseWithException() if you don't want to ignore the exception. if you
+	 * want strict input check use parseStrict()
+	 * 
+	 * @see JSONParser#parse(Reader)
+	 * @see #parseWithException(Reader)
+	 * 
+	 * @since 1.0.9-2
+	 * 
+	 * @return Instance of the following: JSONObject, JSONArray, String,
+	 *         java.lang.Number, java.lang.Boolean, null
+	 * 
+	 */
+	public static Object parse(InputStream in) {
+		try {
+			return new JSONParser(DEFAULT_PERMISSIVE_MODE).parse(in);
+		} catch (Exception e) {
+			return null;
+		}
+	}
 
 	/**
 	 * Parse JSON text into java object from the input source. Please use
@@ -99,6 +144,32 @@ public class JSONValue {
 	/**
 	 * Parse Json input to a java Object keeping element order
 	 * 
+	 * @since 1.0.9-2
+	 */
+	public static Object parseKeepingOrder(byte[] in) {
+		try {
+			return new JSONParser(DEFAULT_PERMISSIVE_MODE).parse(in, FACTORY_ORDERED);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	/**
+	 * Parse Json input to a java Object keeping element order
+	 * 
+	 * @since 1.0.9-2
+	 */
+	public static Object parseKeepingOrder(InputStream in) {
+		try {
+			return new JSONParser(DEFAULT_PERMISSIVE_MODE).parse(in, FACTORY_ORDERED);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	/**
+	 * Parse Json input to a java Object keeping element order
+	 * 
 	 * @since 1.0.6.1
 	 */
 	public static Object parseKeepingOrder(Reader in) {
@@ -125,9 +196,9 @@ public class JSONValue {
 	/**
 	 * Parse Json Using SAX event handler
 	 * 
-	 * @since 1.0.6.2
+	 * @since 1.0.9-2
 	 */
-	public static void SAXParse(String input, ContentHandler handler) throws ParseException {
+	public static void SAXParse(InputStream input, ContentHandler handler) throws ParseException, IOException {
 		JSONParser p = new JSONParser(DEFAULT_PERMISSIVE_MODE);
 		p.parse(input, FACTORY_FAKE_COINTAINER, handler);
 	}
@@ -138,6 +209,16 @@ public class JSONValue {
 	 * @since 1.0.6.2
 	 */
 	public static void SAXParse(Reader input, ContentHandler handler) throws ParseException, IOException {
+		JSONParser p = new JSONParser(DEFAULT_PERMISSIVE_MODE);
+		p.parse(input, FACTORY_FAKE_COINTAINER, handler);
+	}
+
+	/**
+	 * Parse Json Using SAX event handler
+	 * 
+	 * @since 1.0.6.2
+	 */
+	public static void SAXParse(String input, ContentHandler handler) throws ParseException {
 		JSONParser p = new JSONParser(DEFAULT_PERMISSIVE_MODE);
 		p.parse(input, FACTORY_FAKE_COINTAINER, handler);
 	}
@@ -182,6 +263,34 @@ public class JSONValue {
 	 * 
 	 * @see JSONParser
 	 * 
+	 * @since 1.0.9-2
+	 * 
+	 * @return Instance of the following: JSONObject, JSONArray, String,
+	 *         java.lang.Number, java.lang.Boolean, null
+	 */
+	public static Object parseWithException(byte[] in) throws IOException, ParseException {
+		return new JSONParser(DEFAULT_PERMISSIVE_MODE).parse(in, FACTORY_SIMPLE);
+	}
+
+	/**
+	 * Parse JSON text into java object from the input source.
+	 * 
+	 * @see JSONParser
+	 * 
+	 * @since 1.0.9-2
+	 * 
+	 * @return Instance of the following: JSONObject, JSONArray, String,
+	 *         java.lang.Number, java.lang.Boolean, null
+	 */
+	public static Object parseWithException(InputStream in) throws IOException, ParseException {
+		return new JSONParser(DEFAULT_PERMISSIVE_MODE).parse(in, FACTORY_SIMPLE);
+	}
+
+	/**
+	 * Parse JSON text into java object from the input source.
+	 * 
+	 * @see JSONParser
+	 * 
 	 * @return Instance of the following: JSONObject, JSONArray, String,
 	 *         java.lang.Number, java.lang.Boolean, null
 	 */
@@ -206,6 +315,20 @@ public class JSONValue {
 	 * 
 	 * @see JSONParser
 	 * 
+	 * @since 1.0.9-2
+	 * 
+	 * @return Instance of the following: JSONObject, JSONArray, String,
+	 *         java.lang.Number, java.lang.Boolean, null
+	 */
+	public static Object parseStrict(InputStream in) throws IOException, ParseException {
+		return new JSONParser(MODE_RFC4627).parse(in, FACTORY_SIMPLE);
+	}
+
+	/**
+	 * Parse valid RFC4627 JSON text into java object from the input source.
+	 * 
+	 * @see JSONParser
+	 * 
 	 * @return Instance of the following: JSONObject, JSONArray, String,
 	 *         java.lang.Number, java.lang.Boolean, null
 	 */
@@ -222,6 +345,18 @@ public class JSONValue {
 	 *         java.lang.Number, java.lang.Boolean, null
 	 */
 	public static Object parseStrict(String s) throws ParseException {
+		return new JSONParser(MODE_RFC4627).parse(s, FACTORY_SIMPLE);
+	}
+
+	/**
+	 * Parse valid RFC4627 JSON text into java object from the input source.
+	 * 
+	 * @see JSONParser
+	 * 
+	 * @return Instance of the following: JSONObject, JSONArray, String,
+	 *         java.lang.Number, java.lang.Boolean, null
+	 */
+	public static Object parseStrict(byte[] s) throws ParseException {
 		return new JSONParser(MODE_RFC4627).parse(s, FACTORY_SIMPLE);
 	}
 
@@ -360,7 +495,7 @@ public class JSONValue {
 			JSONValue.writeJSONString(value.toString(), out, compression);
 		} else if (value instanceof Enum<?>) {
 			@SuppressWarnings("rawtypes")
-			String s = ((Enum)value).name();
+			String s = ((Enum) value).name();
 			if (!compression.mustProtectValue(s))
 				out.append(s);
 			else {
