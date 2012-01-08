@@ -372,8 +372,7 @@ abstract class JSONParserBase {
 
 	protected void skipNQString(boolean[] stop) throws IOException {
 		for (;;) {
-			if (c >= 0) { // if (c >= 0 && c < MAX_STOP && !stop[c] && c != EOI)
-							// {
+			if (c >= 0) {
 				if (c < MAX_STOP && stop[c])
 					return;
 			} else if (c == EOI)

@@ -79,7 +79,9 @@ class JSONParserString extends JSONParserMemory {
 		else
 			this.c = in.charAt(pos);
 	}
-// XX
+	/**
+	 * read data can not be EOI
+	 */
 	final protected void readNoEnd() throws ParseException {
 		if (++pos >= len) {
 			this.c = EOI;
