@@ -22,10 +22,10 @@ import static net.minidev.json.parser.ParseException.ERROR_UNEXPECTED_EOF;
  * 
  * @author Uriel Chemouni <uchemouni@gmail.com>
  */
-class JSONParserBytes extends JSONParserMemory {
+class JSONParserByteArray extends JSONParserMemory {
 	private byte[] in;
 
-	public JSONParserBytes(int permissiveMode) {
+	public JSONParserByteArray(int permissiveMode) {
 		super(permissiveMode);
 	}
 
@@ -66,7 +66,7 @@ class JSONParserBytes extends JSONParserMemory {
 		return -1;
 	}
 
-	final protected void read() {
+	protected void read() {
 		if (++pos >= len)
 			this.c = EOI;
 		else
@@ -76,14 +76,14 @@ class JSONParserBytes extends JSONParserMemory {
 	/**
 	 * Same as read() in memory parssing
 	 */
-	final protected void readS() {
+	protected void readS() {
 		if (++pos >= len)
 			this.c = EOI;
 		else
 			this.c = (char)in[pos];
 	}
 
-	final protected void readNoEnd() throws ParseException {
+	protected void readNoEnd() throws ParseException {
 		if (++pos >= len) {
 			this.c = EOI;
 			throw new ParseException(pos - 1, ERROR_UNEXPECTED_EOF, "EOF");

@@ -63,7 +63,7 @@ class JSONParserString extends JSONParserMemory {
 		return in.indexOf(c, pos);
 	}
 
-	final protected void read() {
+	protected void read() {
 		if (++pos >= len)
 			this.c = EOI;
 		else
@@ -73,7 +73,7 @@ class JSONParserString extends JSONParserMemory {
 	/**
 	 * Same as read() in memory parssing
 	 */
-	final protected void readS() {
+	protected void readS() {
 		if (++pos >= len)
 			this.c = EOI;
 		else
@@ -82,12 +82,11 @@ class JSONParserString extends JSONParserMemory {
 	/**
 	 * read data can not be EOI
 	 */
-	final protected void readNoEnd() throws ParseException {
+	protected void readNoEnd() throws ParseException {
 		if (++pos >= len) {
 			this.c = EOI;
 			throw new ParseException(pos - 1, ERROR_UNEXPECTED_EOF, "EOF");
 		} else
 			this.c = in.charAt(pos);
 	}
-
 }

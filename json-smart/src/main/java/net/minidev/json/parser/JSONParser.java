@@ -112,7 +112,7 @@ public class JSONParser {
 	private JSONParserReader pStream;
 	private JSONParserInputStream pSBintream;
 	private JSONParserString pString;
-	private JSONParserBytes pBytes;
+	private JSONParserByteArray pBytes;
 
 	/**
 	 * @deprecated prefer usage of new JSONParser(JSONParser.MODE_*)
@@ -157,7 +157,7 @@ public class JSONParser {
 	 */
 	public Object parse(byte[] in) throws ParseException {
 		if (pBytes == null)
-			pBytes = new JSONParserBytes(mode);
+			pBytes = new JSONParserByteArray(mode);
 		return pBytes.parse(in);
 	}
 
@@ -167,13 +167,13 @@ public class JSONParser {
 	 */
 	public Object parse(byte[] in, ContainerFactory containerFactory) throws ParseException {
 		if (pBytes == null)
-			pBytes = new JSONParserBytes(mode);
+			pBytes = new JSONParserByteArray(mode);
 		return pBytes.parse(in, containerFactory);
 	}
 
 	public Object parse(byte[] in, ContainerFactory containerFactory, ContentHandler handler) throws ParseException {
 		if (pBytes == null)
-			pBytes = new JSONParserBytes(mode);
+			pBytes = new JSONParserByteArray(mode);
 		return pBytes.parse(in, containerFactory, handler);
 	}
 

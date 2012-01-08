@@ -32,24 +32,24 @@ import java.util.Map;
  * JSONParserBase is the common code between {@link JSONParserString} and
  * {@link JSONParserReader}
  * 
- * @see JSONParserString
- * @see JSONParserReader
+ * @see JSONParserMemory
+ * @see JSONParserStream
  * 
  * @author Uriel Chemouni <uchemouni@gmail.com>
  */
 abstract class JSONParserBase {
 	protected char c;
 	public final static byte EOI = 0x1A;
-	protected static final char MAX_STOP = 126;
+	protected static final char MAX_STOP = 126; // '}' -> 125
+	//
 
+	protected static boolean[] stopAll = new boolean[MAX_STOP];
 	protected static boolean[] stopArray = new boolean[MAX_STOP];
 	protected static boolean[] stopKey = new boolean[MAX_STOP];
 	protected static boolean[] stopValue = new boolean[MAX_STOP];
 	protected static boolean[] stopX = new boolean[MAX_STOP];
-	protected static boolean[] stopAll = new boolean[MAX_STOP];
 
 	static {
-		byte EOI = 0x1A;
 		stopKey[':'] = stopKey[EOI] = true;
 		stopValue[','] = stopValue['}'] = stopValue[EOI] = true;
 		stopArray[','] = stopArray[']'] = stopArray[EOI] = true;
@@ -57,28 +57,29 @@ abstract class JSONParserBase {
 		stopAll[','] = stopAll[':'] = true;
 		stopAll[']'] = stopAll['}'] = stopAll[EOI] = true;
 	}
+
 	/*
 	 * End of static declaration
 	 */
 	protected ContainerFactory containerFactory;
 	protected ContentHandler handler;
 	protected final MSB sb = new MSB(15);
-	protected String xs;
 	protected Object xo;
+	protected String xs;
 	protected int pos;
 
 	/*
 	 * Parssing flags
 	 */
-	protected final boolean acceptSimpleQuote;
-	protected final boolean acceptNonQuote;
-	protected final boolean acceptNaN;
-	protected final boolean ignoreControlChar;
-	protected final boolean useIntegerStorage;
 	protected final boolean acceptLeadinZero;
+	protected final boolean acceptNaN;
+	protected final boolean acceptNonQuote;
+	protected final boolean acceptSimpleQuote;
 	protected final boolean acceptUselessComma;
-	protected final boolean useHiPrecisionFloat;
 	protected final boolean checkTaillingData;
+	protected final boolean ignoreControlChar;
+	protected final boolean useHiPrecisionFloat;
+	protected final boolean useIntegerStorage;
 
 	public JSONParserBase(int permissiveMode) {
 		this.acceptNaN = (permissiveMode & JSONParser.ACCEPT_NAN) > 0;
@@ -92,7 +93,51 @@ abstract class JSONParserBase {
 		this.checkTaillingData = (permissiveMode & JSONParser.ACCEPT_TAILLING_DATA) == 0;
 	}
 
-	abstract void read() throws IOException;
+	public void checkControleChar() throws ParseException {
+		if (ignoreControlChar)
+			return;
+		int l = xs.length();
+		for (int i = 0; i < l; i++) {
+			char c = xs.charAt(i);
+			if (c < 0)
+				continue;
+			if (c <= 31)
+				throw new ParseException(pos + i, ParseException.ERROR_UNEXPECTED_CHAR, c);
+			if (c == 127)
+				throw new ParseException(pos + i, ParseException.ERROR_UNEXPECTED_CHAR, c);
+		}
+	}
+
+	public void checkLeadinZero() throws ParseException {
+		int len = xs.length();
+		if (len == 1)
+			return;
+		if (len == 2) {
+			if (xs.equals("00"))
+				throw new ParseException(pos, ERROR_UNEXPECTED_LEADING_0, xs);
+			return;
+		}
+		char c1 = xs.charAt(0);
+		char c2 = xs.charAt(1);
+		if (c1 == '-') {
+			char c3 = xs.charAt(2);
+			if (c2 == '0' && c3 >= '0' && c3 <= '9')
+				throw new ParseException(pos, ERROR_UNEXPECTED_LEADING_0, xs);
+			return;
+		}
+		if (c1 == '0' && c2 >= '0' && c2 <= '9')
+			throw new ParseException(pos, ERROR_UNEXPECTED_LEADING_0, xs);
+	}
+
+	protected Number extractFloat() throws ParseException {
+		if (!acceptLeadinZero)
+			checkLeadinZero();
+		if (!useHiPrecisionFloat)
+			return Float.parseFloat(xs);
+		if (xs.length() > 18) // follow JSonIJ parsing method
+			return new BigDecimal(xs);
+		return Double.parseDouble(xs);
+	}
 
 	/**
 	 * use to return Primitive Type, or String, Or JsonObject or JsonArray
@@ -120,6 +165,71 @@ abstract class JSONParserBase {
 		xo = null;
 		return result;
 	}
+
+	protected Number parseNumber(String s) throws ParseException {
+		// pos
+		int p = 0;
+		// len
+		int l = s.length();
+		// max pos long base 10 len
+		int max = 19;
+		boolean neg;
+
+		if (s.charAt(0) == '-') {
+			p++;
+			max++;
+			neg = true;
+			if (!acceptLeadinZero && l >= 3 && s.charAt(1) == '0')
+				throw new ParseException(pos, ERROR_UNEXPECTED_LEADING_0, s);
+		} else {
+			neg = false;
+			if (!acceptLeadinZero && l >= 2 && s.charAt(0) == '0')
+				throw new ParseException(pos, ERROR_UNEXPECTED_LEADING_0, s);
+		}
+
+		boolean mustCheck;
+		if (l < max) {
+			max = l;
+			mustCheck = false;
+		} else if (l > max) {
+			return new BigInteger(s, 10);
+		} else {
+			max = l - 1;
+			mustCheck = true;
+		}
+
+		long r = 0;
+		while (p < max) {
+			r = (r * 10L) + ('0' - s.charAt(p++));
+		}
+		if (mustCheck) {
+			boolean isBig;
+			if (r > -922337203685477580L) {
+				isBig = false;
+			} else if (r < -922337203685477580L) {
+				isBig = true;
+			} else {
+				if (neg)
+					isBig = (s.charAt(p) > '8');
+				else
+					isBig = (s.charAt(p) > '7');
+			}
+			if (isBig)
+				return new BigInteger(s, 10);
+			r = r * 10L + ('0' - s.charAt(p));
+		}
+		if (neg) {
+			if (this.useIntegerStorage && r >= Integer.MIN_VALUE)
+				return (int) r;
+			return r;
+		}
+		r = -r;
+		if (this.useIntegerStorage && r <= Integer.MAX_VALUE)
+			return (int) r;
+		return r;
+	}
+
+	abstract protected void read() throws IOException;
 
 	protected List<Object> readArray() throws ParseException, IOException {
 		List<Object> obj = containerFactory.createArrayContainer();
@@ -160,6 +270,14 @@ abstract class JSONParserBase {
 			}
 		}
 	}
+
+	/**
+	 * use to return Primitive Type, or String, Or JsonObject or JsonArray
+	 * generated by a ContainerFactory
+	 */
+	// protected <T> T readFirst(AMapper<T> mapper) throws ParseException,
+	// IOException {
+	// }
 
 	/**
 	 * use to return Primitive Type, or String, Or JsonObject or JsonArray
@@ -263,6 +381,12 @@ abstract class JSONParserBase {
 		}
 	}
 
+	abstract protected void readNoEnd() throws ParseException, IOException;
+
+	abstract protected void readNQString(boolean[] stop) throws IOException;
+
+	abstract protected Object readNumber(boolean[] stop) throws ParseException, IOException;
+
 	protected Map<String, Object> readObject() throws ParseException, IOException {
 		Map<String, Object> obj = this.containerFactory.createObjectContainer();
 		if (c != '{')
@@ -297,17 +421,15 @@ abstract class JSONParserBase {
 			case '"':
 			case '\'':
 			default:
-				String key;
 				int keyStart = pos;
 				if (c == '\"' || c == '\'') {
 					readString();
-					key = xs;
 				} else {
 					readNQString(stopKey);
-					key = xs;
 					if (!acceptNonQuote)
-						throw new ParseException(pos, ERROR_UNEXPECTED_TOKEN, key);
+						throw new ParseException(pos, ERROR_UNEXPECTED_TOKEN, xs);
 				}
+				String key = xs;
 				if (!acceptData)
 					throw new ParseException(pos, ERROR_UNEXPECTED_TOKEN, key);
 				handler.startObjectEntry(key);
@@ -322,6 +444,11 @@ abstract class JSONParserBase {
 					throw new ParseException(keyStart, ERROR_UNEXPECTED_DUPLICATE_KEY, key);
 				handler.endObjectEntry();
 				// should loop skipping read step
+				//
+				//
+				//
+				//
+				//
 				if (c == '}') {
 					read(); /* unstack */
 					handler.endObject();
@@ -339,110 +466,12 @@ abstract class JSONParserBase {
 		}
 	}
 
-	abstract protected void readString() throws ParseException, IOException;
-
-	abstract protected void readNQString(boolean[] stop) throws IOException;
-
-	abstract protected Object readNumber(boolean[] stop) throws ParseException, IOException;
-
-	protected Number extractFloat() throws ParseException {
-		if (!acceptLeadinZero)
-			checkLeadinZero();
-		if (!useHiPrecisionFloat)
-			return Float.parseFloat(xs);
-		if (xs.length() > 18) // follow JSonIJ parsing method
-			return new BigDecimal(xs);
-		return Double.parseDouble(xs);
-	}
-
 	/**
-	 * read and store
+	 * store and read
 	 */
 	abstract void readS() throws IOException;
 
-	abstract void readNoEnd() throws ParseException, IOException;
-
-	protected void skipDigits() throws IOException {
-		for (;;) {
-			if (c < '0' || c > '9')
-				return;
-			readS();
-		}
-	}
-
-	protected void skipNQString(boolean[] stop) throws IOException {
-		for (;;) {
-			if (c >= 0) {
-				if (c < MAX_STOP && stop[c])
-					return;
-			} else if (c == EOI)
-				return;
-			readS();
-		}
-	}
-
-	protected void skipSpace() throws IOException {
-		for (;;) {
-			if (c > ' ' || c == EOI)
-				return;
-			readS();
-		}
-	}
-
-	protected char readUnicode() throws ParseException, IOException {
-		int value = 0;
-		for (int i = 0; i < 4; i++) {
-			value = value * 16;
-			read();
-			if (c <= '9' && c >= '0')
-				value += c - '0';
-			else if (c <= 'F' && c >= 'A')
-				value += (c - 'A') + 10;
-			else if (c >= 'a' && c <= 'f')
-				value += (c - 'a') + 10;
-			else if (c == EOI)
-				throw new ParseException(pos, ERROR_UNEXPECTED_EOF, "EOF");
-			else
-				throw new ParseException(pos, ERROR_UNEXPECTED_UNICODE, c);
-		}
-		return (char) value;
-	}
-
-	public void checkLeadinZero() throws ParseException {
-		int len = xs.length();
-		if (len == 1)
-			return;
-		if (len == 2) {
-			if (xs.equals("00"))
-				throw new ParseException(pos, ERROR_UNEXPECTED_LEADING_0, xs);
-			return;
-		}
-		char c1 = xs.charAt(0);
-		char c2 = xs.charAt(1);
-		if (c1 == '-') {
-			char c3 = xs.charAt(2);
-			if (c2 == '0' && c3 >= '0' && c3 <= '9')
-				throw new ParseException(pos, ERROR_UNEXPECTED_LEADING_0, xs);
-			return;
-		}
-		if (c1 == '0' && c2 >= '0' && c2 <= '9')
-			throw new ParseException(pos, ERROR_UNEXPECTED_LEADING_0, xs);
-	}
-
-	public void checkControleChar() throws ParseException {
-		if (ignoreControlChar)
-			return;
-		int l = xs.length();
-		for (int i = 0; i < l; i++) {
-			char c = xs.charAt(i);
-			if (c < 0)
-				continue;
-			if (c <= 31)
-				throw new ParseException(pos + i, ParseException.ERROR_UNEXPECTED_CHAR, c);
-			if (c == 127)
-				throw new ParseException(pos + i, ParseException.ERROR_UNEXPECTED_CHAR, c);
-		}
-	}
+	abstract protected void readString() throws ParseException, IOException;
 
 	protected void readString2() throws ParseException, IOException {
 		/* assert (c == '\"' || c == '\'') */
@@ -540,67 +569,47 @@ abstract class JSONParserBase {
 		}
 	}
 
-	protected Number parseNumber(String s) throws ParseException {
-		// pos
-		int p = 0;
-		// len
-		int l = s.length();
-		// max pos long base 10 len
-		int max = 19;
-		boolean neg;
+	protected char readUnicode() throws ParseException, IOException {
+		int value = 0;
+		for (int i = 0; i < 4; i++) {
+			value = value * 16;
+			read();
+			if (c <= '9' && c >= '0')
+				value += c - '0';
+			else if (c <= 'F' && c >= 'A')
+				value += (c - 'A') + 10;
+			else if (c >= 'a' && c <= 'f')
+				value += (c - 'a') + 10;
+			else if (c == EOI)
+				throw new ParseException(pos, ERROR_UNEXPECTED_EOF, "EOF");
+			else
+				throw new ParseException(pos, ERROR_UNEXPECTED_UNICODE, c);
+		}
+		return (char) value;
+	}
 
-		if (s.charAt(0) == '-') {
-			p++;
-			max++;
-			neg = true;
-			if (!acceptLeadinZero && l >= 3 && s.charAt(1) == '0')
-				throw new ParseException(pos, ERROR_UNEXPECTED_LEADING_0, s);
-		} else {
-			neg = false;
-			if (!acceptLeadinZero && l >= 2 && s.charAt(0) == '0')
-				throw new ParseException(pos, ERROR_UNEXPECTED_LEADING_0, s);
+	protected void skipDigits() throws IOException {
+		for (;;) {
+			if (c < '0' || c > '9')
+				return;
+			readS();
 		}
+	}
 
-		boolean mustCheck;
-		if (l < max) {
-			max = l;
-			mustCheck = false;
-		} else if (l > max) {
-			return new BigInteger(s, 10);
-		} else {
-			max = l - 1;
-			mustCheck = true;
+	protected void skipNQString(boolean[] stop) throws IOException {
+		for (;;) {
+			if ((c == EOI) || (c >= 0 && c < MAX_STOP && stop[c]))
+				return;
+			readS();
 		}
+	}
 
-		long r = 0;
-		while (p < max) {
-			r = (r * 10L) + ('0' - s.charAt(p++));
+	protected void skipSpace() throws IOException {
+		for (;;) {
+			if (c > ' ' || c == EOI)
+				return;
+			readS();
 		}
-		if (mustCheck) {
-			boolean isBig;
-			if (r > -922337203685477580L) {
-				isBig = false;
-			} else if (r < -922337203685477580L) {
-				isBig = true;
-			} else {
-				if (neg)
-					isBig = (s.charAt(p) > '8');
-				else
-					isBig = (s.charAt(p) > '7');
-			}
-			if (isBig)
-				return new BigInteger(s, 10);
-			r = r * 10L + ('0' - s.charAt(p));
-		}
-		if (neg) {
-			if (this.useIntegerStorage && r >= Integer.MIN_VALUE)
-				return (int) r;
-			return r;
-		}
-		r = -r;
-		if (this.useIntegerStorage && r <= Integer.MAX_VALUE)
-			return (int) r;
-		return r;
 	}
 
 	public static class MSB {

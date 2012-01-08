@@ -25,6 +25,8 @@ import java.io.IOException;
  * Parser for JSON text. Please note that JSONParser is NOT thread-safe.
  * 
  * @author Uriel Chemouni <uchemouni@gmail.com>
+ * @see JSONParserString
+ * @see JSONParserByteArray
  */
 abstract class JSONParserMemory extends JSONParserBase {
 	protected int len;
@@ -57,9 +59,9 @@ abstract class JSONParserMemory extends JSONParserBase {
 				return xs;
 			}
 			extractStringTrim(start, pos);
-			return parseNumber(xs.trim());
+			return parseNumber(xs);
 		}
-		// floating point 
+		// floating point
 		if (c == '.') {
 			//
 			read();
@@ -126,7 +128,7 @@ abstract class JSONParserMemory extends JSONParserBase {
 			// handler.primitive(tmp);
 			return;
 		}
-		sb.clear();// sb.delete(0, sb.length());
+		sb.clear();
 		readString2();
 	}
 

@@ -60,14 +60,14 @@ class JSONParserInputStream extends JSONParserStream {
 		return super.parse(containerFactory, handler);
 	}
 
-	final protected void read() throws IOException {
+	protected void read() throws IOException {
 		int i = in.read();
 		c = (i == -1) ? (char) EOI : (char) i;
 		pos++;
 		//
 	}
 
-	final protected void readS() throws IOException {
+	protected void readS() throws IOException {
 		sb.append(c);
 		int i = in.read();
 		if (i == -1) {
@@ -78,12 +78,11 @@ class JSONParserInputStream extends JSONParserStream {
 		}
 	}
 
-	final protected void readNoEnd() throws ParseException, IOException {
+	protected void readNoEnd() throws ParseException, IOException {
 		int i = in.read();
 		if (i == -1)
 			throw new ParseException(pos - 1, ERROR_UNEXPECTED_EOF, "EOF");
 		c = (char) i;
 		//
 	}
-
 }
