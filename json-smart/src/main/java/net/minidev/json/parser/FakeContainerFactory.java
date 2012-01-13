@@ -46,6 +46,9 @@ public class FakeContainerFactory implements ContainerFactory {
 		return map;
 	}
 
+	/**
+	 * dummy AbstractMap
+	 */
 	static class FackMap extends AbstractMap<String, Object> {
 		public Object put(String key, Object value) {
 			return null;
@@ -57,6 +60,9 @@ public class FakeContainerFactory implements ContainerFactory {
 		}
 	}
 
+	/**
+	 * dummy AbstractList
+	 */
 	static class FackList extends AbstractList<Object> {
 		public boolean add(Object e) {
 			return false;

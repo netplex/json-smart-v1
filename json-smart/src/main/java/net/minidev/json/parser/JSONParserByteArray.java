@@ -56,7 +56,7 @@ class JSONParserByteArray extends JSONParserMemory {
 	}
 
 	protected void extractString(int beginIndex, int endIndex) {
-		xs = new String(in, beginIndex, endIndex);
+		xs = new String(in, beginIndex, endIndex - beginIndex);
 	}
 
 	protected int indexOf(char c, int pos) {
@@ -70,7 +70,7 @@ class JSONParserByteArray extends JSONParserMemory {
 		if (++pos >= len)
 			this.c = EOI;
 		else
-			this.c = (char)in[pos];
+			this.c = (char) in[pos];
 	}
 
 	/**
@@ -80,7 +80,7 @@ class JSONParserByteArray extends JSONParserMemory {
 		if (++pos >= len)
 			this.c = EOI;
 		else
-			this.c = (char)in[pos];
+			this.c = (char) in[pos];
 	}
 
 	protected void readNoEnd() throws ParseException {
@@ -88,7 +88,7 @@ class JSONParserByteArray extends JSONParserMemory {
 			this.c = EOI;
 			throw new ParseException(pos - 1, ERROR_UNEXPECTED_EOF, "EOF");
 		} else
-			this.c = (char)in[pos];
+			this.c = (char) in[pos];
 	}
 
 }
