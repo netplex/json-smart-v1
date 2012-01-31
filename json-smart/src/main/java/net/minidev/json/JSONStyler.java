@@ -72,49 +72,49 @@ public class JSONStyler extends JSONStyle implements ContentHandler {
 		return (JSONStyler) this;
 	}
 
-	@Override
+	// @Override JDK 1.5 compatibility change
 	public void startJSON() throws ParseException {
 	}
 
-	@Override
+	// @Override JDK 1.5 compatibility change
 	public void endJSON() throws ParseException {
 	}
 
-	@Override
+	// @Override JDK 1.5 compatibility change
 	public boolean startObject() throws ParseException {
 		deep++;
 		return false;
 	}
 
-	@Override
+	// @Override JDK 1.5 compatibility change
 	public boolean endObject() throws ParseException {
 		deep--;
 		return false;
 	}
 
-	@Override
+	// @Override JDK 1.5 compatibility change
 	public boolean startObjectEntry(String key) throws ParseException {
 		return false;
 	}
 
-	@Override
+	// @Override JDK 1.5 compatibility change
 	public boolean endObjectEntry() throws ParseException {
 		return false;
 	}
 
-	@Override
+	// @Override JDK 1.5 compatibility change
 	public boolean startArray() throws ParseException {
 		deep++;
 		return false;
 	}
 
-	@Override
+	// @Override JDK 1.5 compatibility change
 	public boolean endArray() throws ParseException {
 		deep--;
 		return false;
 	}
 
-	@Override
+	// @Override JDK 1.5 compatibility change
 	public boolean primitive(Object value) throws ParseException {
 		return false;
 	}

@@ -20,45 +20,45 @@ import java.io.IOException;
 public class ContentHandlerDumy implements ContentHandler {
 	public static ContentHandlerDumy HANDLER = new ContentHandlerDumy();
 
-	@Override
+	// @Override JDK 1.5 compatibility change
 	public void startJSON() throws ParseException {
 	}
 
-	@Override
+	// @Override JDK 1.5 compatibility change
 	public void endJSON() throws ParseException {
 	}
 
-	@Override
+	// @Override JDK 1.5 compatibility change
 	public boolean startObject() throws ParseException, IOException {
 		return false;
 	}
 
-	@Override
+	// @Override JDK 1.5 compatibility change
 	public boolean endObject() throws ParseException {
 		return false;
 	}
 
-	@Override
+	// @Override JDK 1.5 compatibility change
 	public boolean startObjectEntry(String key) throws ParseException {
 		return false;
 	}
 
-	@Override
+	// @Override JDK 1.5 compatibility change
 	public boolean endObjectEntry() throws ParseException {
 		return false;
 	}
 
-	@Override
+	// @Override JDK 1.5 compatibility change
 	public boolean startArray() throws ParseException {
 		return false;
 	}
 
-	@Override
+	// @Override JDK 1.5 compatibility change
 	public boolean endArray() throws ParseException {
 		return false;
 	}
 
-	@Override
+	// @Override JDK 1.5 compatibility change
 	public boolean primitive(Object value) throws ParseException {
 		return false;
 	}

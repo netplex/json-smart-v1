@@ -32,14 +32,14 @@ public class FakeContainerFactory implements ContainerFactory {
 	public FackList list;
 	public FackMap map;
 
-	@Override
+	// @Override JDK 1.5 compatibility change
 	public List<Object> createArrayContainer() {
 		if (list == null)
 			list = new FackList();
 		return list;
 	}
 
-	@Override
+	// @Override JDK 1.5 compatibility change
 	public Map<String, Object> createObjectContainer() {
 		if (map == null)
 			map = new FackMap();

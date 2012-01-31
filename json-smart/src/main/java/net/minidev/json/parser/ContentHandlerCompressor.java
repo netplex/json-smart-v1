@@ -53,15 +53,15 @@ public class ContentHandlerCompressor implements ContentHandler {
 		this.compression = compression;
 	}
 
-	@Override
+	// @Override JDK 1.5 compatibility change
 	public void startJSON() throws ParseException, IOException {
 	}
 
-	@Override
+	// @Override JDK 1.5 compatibility change
 	public void endJSON() throws ParseException, IOException {
 	}
 
-	@Override
+	// @Override JDK 1.5 compatibility change
 	public boolean startObject() throws ParseException, IOException {
 		if (isInArray() && stack[pos + 1]++ > 0)
 			out.append(',');
@@ -71,7 +71,7 @@ public class ContentHandlerCompressor implements ContentHandler {
 		return false;
 	}
 
-	@Override
+	// @Override JDK 1.5 compatibility change
 	public boolean endObject() throws ParseException, IOException {
 		out.append('}');
 		pos -= 2;
@@ -79,7 +79,7 @@ public class ContentHandlerCompressor implements ContentHandler {
 		return false;
 	}
 
-	@Override
+	// @Override JDK 1.5 compatibility change
 	public boolean startObjectEntry(String key) throws ParseException, IOException {
 		if (stack[pos + 1]++ > 0)
 			out.append(',');
@@ -96,12 +96,12 @@ public class ContentHandlerCompressor implements ContentHandler {
 		return false;
 	}
 
-	@Override
+	// @Override JDK 1.5 compatibility change
 	public boolean endObjectEntry() throws ParseException, IOException {
 		return false;
 	}
 
-	@Override
+	// @Override JDK 1.5 compatibility change
 	public boolean startArray() throws ParseException, IOException {
 		if (isInArray() && stack[pos + 1]++ > 0)
 			out.append(',');
@@ -110,14 +110,14 @@ public class ContentHandlerCompressor implements ContentHandler {
 		return false;
 	}
 
-	@Override
+	// @Override JDK 1.5 compatibility change
 	public boolean endArray() throws ParseException, IOException {
 		out.append(']');
 		pos -= 2;
 		return false;
 	}
 
-	@Override
+	// @Override JDK 1.5 compatibility change
 	public boolean primitive(Object value) throws ParseException, IOException {
 		if (!isInObject() && stack[pos + 1]++ > 0)
 			out.append(',');

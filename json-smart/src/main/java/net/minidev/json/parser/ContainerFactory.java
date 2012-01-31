@@ -43,12 +43,12 @@ public interface ContainerFactory {
 	 */
 	public final static ContainerFactory FACTORY_SIMPLE = new ContainerFactory() {
 
-		@Override
+		// @Override JDK 1.5 compatibility change
 		public Map<String, Object> createObjectContainer() {
 			return new JSONObject();
 		}
 
-		@Override
+		// @Override JDK 1.5 compatibility change
 		public List<Object> createArrayContainer() {
 			return new JSONArray();
 		}
@@ -56,12 +56,12 @@ public interface ContainerFactory {
 
 	public final static ContainerFactory FACTORY_ORDERED = new ContainerFactory() {
 
-		@Override
+		// @Override JDK 1.5 compatibility change
 		public Map<String, Object> createObjectContainer() {
 			return new LinkedHashMap<String, Object>();
 		}
 
-		@Override
+		// @Override JDK 1.5 compatibility change
 		public List<Object> createArrayContainer() {
 			return new JSONArray();
 		}

@@ -28,9 +28,9 @@ import net.minidev.json.parser.ContainerFactory;
  * 
  * @author Uriel Chemouni <uchemouni@gmail.com>
  */
-public class JSONNavi {
+public class JSONNavi<T> {
 	private ContainerFactory factory;
-	private Object root;
+	private T root;
 
 	private Stack<Object> stack = new Stack<Object>();
 	private Stack<Object> path = new Stack<Object>();
@@ -42,8 +42,20 @@ public class JSONNavi {
 	private boolean readonly = false;
 	private Object missingKey = null;
 
-	public static JSONNavi newInstance() {
-		return new JSONNavi(ContainerFactory.FACTORY_ORDERED);
+	public static JSONNavi<JSONAwareEx> newInstance() {
+		return new JSONNavi<JSONAwareEx>(ContainerFactory.FACTORY_ORDERED);
+	}
+
+	public static JSONNavi<JSONObject> newInstanceObject() {
+		JSONNavi<JSONObject> o = new JSONNavi<JSONObject>(ContainerFactory.FACTORY_ORDERED);
+		o.object();
+		return o;
+	}
+
+	public static JSONNavi<JSONArray> newInstanceArray() {
+		JSONNavi<JSONArray> o = new JSONNavi<JSONArray>(ContainerFactory.FACTORY_ORDERED);
+		o.array();
+		return o;
 	}
 
 	public JSONNavi() {
@@ -51,7 +63,7 @@ public class JSONNavi {
 	}
 
 	public JSONNavi(String json) {
-		this.root = JSONValue.parse(json);
+		this.root = (T)JSONValue.parse(json);
 		this.current = this.root;
 		readonly = true;
 	}
@@ -61,7 +73,10 @@ public class JSONNavi {
 		this.readonly = false;
 	}
 
-	public JSONNavi root() {
+	/**
+	 * return to root node
+	 */
+	public JSONNavi<T> root() {
 		this.current = this.root;
 		this.stack.clear();
 		this.path.clear();
@@ -75,7 +90,11 @@ public class JSONNavi {
 		return failure;
 	}
 
-	public JSONNavi at(String key) {
+	public Object getCurrentObject() {
+		return current;
+	}
+
+	public JSONNavi<?> at(String key) {
 		if (failure)
 			return this;
 		if (!isObject(current))
@@ -98,7 +117,7 @@ public class JSONNavi {
 		return this;
 	}
 
-	public JSONNavi set(String key, String value) {
+	public JSONNavi<T> set(String key, String value) {
 		object();
 		if (failure)
 			return this;
@@ -106,7 +125,7 @@ public class JSONNavi {
 		return this;
 	}
 
-	public JSONNavi set(String key, Number value) {
+	public JSONNavi<T> set(String key, Number value) {
 		object();
 		if (failure)
 			return this;
@@ -114,23 +133,66 @@ public class JSONNavi {
 		return this;
 	}
 
-	public JSONNavi set(String key, long value) {
+	/**
+	 * write an value in the current object
+	 * 
+	 * @param key
+	 *            key to access
+	 * @param value
+	 *            new value
+	 * @return this
+	 */
+	public JSONNavi<T> set(String key, long value) {
 		return set(key, Long.valueOf(value));
 	}
 
-	public JSONNavi set(String key, int value) {
+	/**
+	 * write an value in the current object
+	 * 
+	 * @param key
+	 *            key to access
+	 * @param value
+	 *            new value
+	 * @return this
+	 */
+	public JSONNavi<T> set(String key, int value) {
 		return set(key, Integer.valueOf(value));
 	}
 
-	public JSONNavi set(String key, double value) {
+	/**
+	 * write an value in the current object
+	 * 
+	 * @param key
+	 *            key to access
+	 * @param value
+	 *            new value
+	 * @return this
+	 */
+	public JSONNavi<T> set(String key, double value) {
 		return set(key, Double.valueOf(value));
 	}
 
-	public JSONNavi set(String key, float value) {
+	/**
+	 * write an value in the current object
+	 * 
+	 * @param key
+	 *            key to access
+	 * @param value
+	 *            new value
+	 * @return this
+	 */
+	public JSONNavi<T> set(String key, float value) {
 		return set(key, Float.valueOf(value));
 	}
 
-	public JSONNavi add(Object... values) {
+	/**
+	 * add value to the current arrays
+	 * 
+	 * @param values
+	 *            to add
+	 * @return this
+	 */
+	public JSONNavi<T> add(Object... values) {
 		array();
 		if (failure)
 			return this;
@@ -152,6 +214,10 @@ public class JSONNavi {
 		return current.toString();
 	}
 
+	/**
+	 * get the current value as double if the current Object is null return
+	 * Double.NaN
+	 */
 	public double asDouble() {
 		if (current instanceof Number)
 			return ((Number) current).doubleValue();
@@ -173,6 +239,10 @@ public class JSONNavi {
 		return Double.NaN;
 	}
 
+	/**
+	 * get the current value as float if the current Object is null return
+	 * Float.NaN
+	 */
 	public double asFloat() {
 		if (current instanceof Number)
 			return ((Number) current).floatValue();
@@ -194,6 +264,9 @@ public class JSONNavi {
 		return Float.NaN;
 	}
 
+	/**
+	 * get the current value as int if the current Object is null return 0
+	 */
 	public int asInt() {
 		if (current instanceof Number)
 			return ((Number) current).intValue();
@@ -221,6 +294,9 @@ public class JSONNavi {
 		return null;
 	}
 
+	/**
+	 * get the current value as long if the current Object is null return 0
+	 */
 	public long asLong() {
 		if (current instanceof Number)
 			return ((Number) current).longValue();
@@ -244,6 +320,10 @@ public class JSONNavi {
 		return null;
 	}
 
+	/**
+	 * get the current value as boolean if the current Object is null or is not
+	 * a boolean return false
+	 */
 	public boolean asBoolean() {
 		if (current instanceof Boolean)
 			return ((Boolean) current).booleanValue();
@@ -266,7 +346,7 @@ public class JSONNavi {
 	 * Set current value as Json Object You can also skip this call, Objects can
 	 * be create automatically.
 	 */
-	public JSONNavi object() {
+	public JSONNavi<T> object() {
 		if (failure)
 			return this;
 		if (current == null && readonly)
@@ -277,10 +357,11 @@ public class JSONNavi {
 			if (isArray(current))
 				failure("can not use Object feature on Array.", null);
 			failure("Can not use current possition as Object", null);
+		} else {
+			current = factory.createObjectContainer();
 		}
-		current = factory.createObjectContainer();
 		if (root == null)
-			root = current;
+			root = (T)current;
 		else
 			store();
 		return this;
@@ -290,7 +371,7 @@ public class JSONNavi {
 	 * Set current value as Json Array You can also skip this call Arrays can be
 	 * create automatically.
 	 */
-	public JSONNavi array() {
+	public JSONNavi<T> array() {
 		if (failure)
 			return this;
 		if (current == null && readonly)
@@ -301,10 +382,11 @@ public class JSONNavi {
 			if (isObject(current))
 				failure("can not use Object feature on Array.", null);
 			failure("Can not use current possition as Object", null);
+		} else {
+			current = factory.createArrayContainer();
 		}
-		current = factory.createArrayContainer();
 		if (root == null)
-			root = current;
+			root = (T)current;
 		else
 			store();
 		return this;
@@ -313,7 +395,7 @@ public class JSONNavi {
 	/**
 	 * set current value as Number
 	 */
-	public JSONNavi set(Number num) {
+	public JSONNavi<T> set(Number num) {
 		if (failure)
 			return this;
 		current = num;
@@ -324,7 +406,7 @@ public class JSONNavi {
 	/**
 	 * set current value as Boolean
 	 */
-	public JSONNavi set(Boolean bool) {
+	public JSONNavi<T> set(Boolean bool) {
 		if (failure)
 			return this;
 		current = bool;
@@ -335,12 +417,16 @@ public class JSONNavi {
 	/**
 	 * set current value as String
 	 */
-	public JSONNavi set(String text) {
+	public JSONNavi<T> set(String text) {
 		if (failure)
 			return this;
 		current = text;
 		store();
 		return this;
+	}
+
+	public T getRoot() {
+		return root;
 	}
 
 	/**
@@ -399,9 +485,9 @@ public class JSONNavi {
 	 * If index is less than 0 access element index from the end like in python.
 	 * 
 	 * @param index
-	 *            desired position in Array
+	 *            0 based desired position in Array
 	 */
-	public JSONNavi at(int index) {
+	public JSONNavi<?> at(int index) {
 		if (failure)
 			return this;
 		if (!(current instanceof List))
@@ -435,7 +521,7 @@ public class JSONNavi {
 	 * 
 	 * this method can only be used in writing mode.
 	 */
-	public JSONNavi atNext() {
+	public JSONNavi<?> atNext() {
 		if (failure)
 			return this;
 		if (!(current instanceof List))
@@ -444,14 +530,14 @@ public class JSONNavi {
 		List<Object> lst = ((List<Object>) current);
 		return at(lst.size());
 	}
-	
+
 	/**
 	 * call up() level times.
 	 * 
 	 * @param level
 	 *            number of parent move.
 	 */
-	public JSONNavi up(int level) {
+	public JSONNavi<?> up(int level) {
 		while (level-- > 0) {
 			if (stack.size() > 0) {
 				current = stack.pop();
@@ -466,7 +552,7 @@ public class JSONNavi {
 	 * Move one level up in Json tree. if no more level up is available the
 	 * statement had no effect.
 	 */
-	public JSONNavi up() {
+	public JSONNavi<?> up() {
 		if (stack.size() > 0) {
 			current = stack.pop();
 			path.pop();
@@ -499,7 +585,7 @@ public class JSONNavi {
 	/**
 	 * Internally log errors.
 	 */
-	private JSONNavi failure(String err, Object jPathPostfix) {
+	private JSONNavi<?> failure(String err, Object jPathPostfix) {
 		failure = true;
 		StringBuilder sb = new StringBuilder();
 		sb.append("Error: ");
@@ -515,6 +601,9 @@ public class JSONNavi {
 		return this;
 	}
 
+	/**
+	 * @return JPath to the current position
+	 */
 	public String getJPath() {
 		StringBuilder sb = new StringBuilder();
 		for (Object o : path) {
