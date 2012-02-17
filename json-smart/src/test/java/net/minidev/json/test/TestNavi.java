@@ -1,12 +1,14 @@
 package net.minidev.json.test;
 
+import java.util.Collection;
+
 import junit.framework.TestCase;
 import net.minidev.json.JSONNavi;
-import net.minidev.json.parser.ContainerFactory;
+import net.minidev.json.JSONObject;
 
 public class TestNavi extends TestCase {
 	public void testNaviWrite() {
-		JSONNavi nav = new JSONNavi(ContainerFactory.FACTORY_ORDERED);
+		JSONNavi<Collection<?>> nav = JSONNavi.newInstanceOrdered();
 		nav.set("name", "jhone").set("age", 42).at("childName").add("fifi", "riri", "loulou").up().at("cat")
 				.set("color", "red");
 		String s1 = "{\"name\":\"jhone\",\"age\":42,\"childName\":[\"fifi\",\"riri\",\"loulou\"],\"cat\":{\"color\":\"red\"}}";
@@ -15,7 +17,7 @@ public class TestNavi extends TestCase {
 
 	public void testNaviWrite2() {
 		// ContainerFactory.FACTORY_ORDERED JSONNavi should keep order
-		JSONNavi nav = new JSONNavi();
+		JSONNavi<Collection<?>> nav = JSONNavi.newInstanceOrdered();
 		nav.at("name").set("toto").up().set("tutu", "V2").at("size").set("width", 10).set("higth", 35).up(3)
 				.set("FinUp", 1).at("array").add(0, 1, 2, 3, 4, 5);
 		nav.at(-1);
@@ -27,7 +29,8 @@ public class TestNavi extends TestCase {
 
 	public void testNaviRead() {
 		String json = "{name:foo,str:null,ar:[1,2,3,4]}";
-		JSONNavi nav = new JSONNavi(json);
+
+		JSONNavi<JSONObject> nav = new JSONNavi<JSONObject>(json);
 		nav.at(5);
 		assertTrue("Navigator should be in error stat", nav.hasFailure());
 		nav.root();
@@ -37,15 +40,18 @@ public class TestNavi extends TestCase {
 		nav.up(2);
 		assertEquals("foo", nav.at("name").asString());
 	}
-	
+
 	public void testNaviWriteArray() {
-		String expected = "{'type':'bundle','data':[{'type':'object','name':'obj1'},{'type':'object','name':'obj2'}]}".replace('\'', '"');
-		JSONNavi nav = JSONNavi.newInstance();
-		nav.set("type", "bundle").at("data").array().at(0).set("type", "object").set("name", "obj1").up().at(1).set("type", "object").set("name", "obj2").root();
+		String expected = "{'type':'bundle','data':[{'type':'object','name':'obj1'},{'type':'object','name':'obj2'}]}"
+				.replace('\'', '"');
+		JSONNavi<Collection<?>> nav = JSONNavi.newInstanceOrdered();
+		nav.set("type", "bundle").at("data").array().at(0).set("type", "object").set("name", "obj1").up().at(1)
+				.set("type", "object").set("name", "obj2").root();
 		assertEquals(expected, nav.toString());
-		
-		nav = JSONNavi.newInstance();
-		nav.set("type", "bundle").at("data").array().atNext().set("type", "object").set("name", "obj1").up().atNext().set("type", "object").set("name", "obj2").root();
+
+		nav = JSONNavi.newInstanceOrdered();
+		nav.set("type", "bundle").at("data").array().atNext().set("type", "object").set("name", "obj1").up().atNext()
+				.set("type", "object").set("name", "obj2").root();
 		assertEquals(expected, nav.toString());
 	}
 

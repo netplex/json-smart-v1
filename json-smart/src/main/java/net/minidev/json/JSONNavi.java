@@ -15,6 +15,7 @@ package net.minidev.json;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -43,17 +44,21 @@ public class JSONNavi<T> {
 	private Object missingKey = null;
 
 	public static JSONNavi<JSONAwareEx> newInstance() {
-		return new JSONNavi<JSONAwareEx>(ContainerFactory.FACTORY_ORDERED);
+		return new JSONNavi<JSONAwareEx>(ContainerFactory.FACTORY_SIMPLE);
+	}
+
+	public static JSONNavi<Collection<?>> newInstanceOrdered() {
+		return new JSONNavi<Collection<?>>(ContainerFactory.FACTORY_ORDERED);
 	}
 
 	public static JSONNavi<JSONObject> newInstanceObject() {
-		JSONNavi<JSONObject> o = new JSONNavi<JSONObject>(ContainerFactory.FACTORY_ORDERED);
+		JSONNavi<JSONObject> o = new JSONNavi<JSONObject>(ContainerFactory.FACTORY_SIMPLE);
 		o.object();
 		return o;
 	}
 
 	public static JSONNavi<JSONArray> newInstanceArray() {
-		JSONNavi<JSONArray> o = new JSONNavi<JSONArray>(ContainerFactory.FACTORY_ORDERED);
+		JSONNavi<JSONArray> o = new JSONNavi<JSONArray>(ContainerFactory.FACTORY_SIMPLE);
 		o.array();
 		return o;
 	}
@@ -63,7 +68,7 @@ public class JSONNavi<T> {
 	}
 
 	public JSONNavi(String json) {
-		this.root = (T)JSONValue.parse(json);
+		this.root = (T) JSONValue.parse(json);
 		this.current = this.root;
 		readonly = true;
 	}
@@ -361,7 +366,7 @@ public class JSONNavi<T> {
 			current = factory.createObjectContainer();
 		}
 		if (root == null)
-			root = (T)current;
+			root = (T) current;
 		else
 			store();
 		return this;
@@ -386,7 +391,7 @@ public class JSONNavi<T> {
 			current = factory.createArrayContainer();
 		}
 		if (root == null)
-			root = (T)current;
+			root = (T) current;
 		else
 			store();
 		return this;
