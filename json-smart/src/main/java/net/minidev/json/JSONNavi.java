@@ -43,20 +43,32 @@ public class JSONNavi<T> {
 	private boolean readonly = false;
 	private Object missingKey = null;
 
+	/**
+	 * build a JSONObject or a jsonArray
+	 */
 	public static JSONNavi<JSONAwareEx> newInstance() {
 		return new JSONNavi<JSONAwareEx>(ContainerFactory.FACTORY_SIMPLE);
 	}
 
+	/**
+	 * build a LinkedHashMap or a JSONArray
+	 */
 	public static JSONNavi<Collection<?>> newInstanceOrdered() {
 		return new JSONNavi<Collection<?>>(ContainerFactory.FACTORY_ORDERED);
 	}
 
+	/**
+	 * build a JSONObject
+	 */
 	public static JSONNavi<JSONObject> newInstanceObject() {
 		JSONNavi<JSONObject> o = new JSONNavi<JSONObject>(ContainerFactory.FACTORY_SIMPLE);
 		o.object();
 		return o;
 	}
-
+	
+	/**
+	 * build a JSONArray
+	 */
 	public static JSONNavi<JSONArray> newInstanceArray() {
 		JSONNavi<JSONArray> o = new JSONNavi<JSONArray>(ContainerFactory.FACTORY_SIMPLE);
 		o.array();
