@@ -518,23 +518,23 @@ public class JSONValue {
 							out.append(',');
 						else
 							needSep = true;
-						appendInt(b, out);
+						out.append(Integer.toString(b));
 					}
 				} else if (c == short.class) {
-					for (int b : ((short[]) value)) {
+					for (short b : ((short[]) value)) {
 						if (needSep)
 							out.append(',');
 						else
 							needSep = true;
-						appendInt(b, out);
+						out.append(Short.toString(b));
 					}
 				} else if (c == byte.class) {
-					for (int b : ((byte[]) value)) {
+					for (byte b : ((byte[]) value)) {
 						if (needSep)
 							out.append(',');
 						else
 							needSep = true;
-						appendInt(b, out);
+						out.append(Byte.toString(b));
 					}
 				} else if (c == long.class) {
 					for (long b : ((long[]) value)) {
@@ -542,14 +542,7 @@ public class JSONValue {
 							out.append(',');
 						else
 							needSep = true;
-						if (b < 0) {
-							out.append('-');
-							b = -b;
-						}
-						do {
-							out.append(DIGITS[(int) (b % 10)]);
-							b = b / 10;
-						} while (b > 0);
+						out.append(Long.toString(b));
 					}
 				} else if (c == float.class) {
 					for (float b : ((float[]) value)) {
@@ -632,19 +625,6 @@ public class JSONValue {
 				throw new RuntimeException(e);
 			}
 		}
-	}
-
-	private static char[] DIGITS = "0123456789".toCharArray();
-
-	private static void appendInt(int l, Appendable out) throws IOException {
-		if (l < 0) {
-			out.append('-');
-			l = -l;
-		}
-		do {
-			out.append(DIGITS[(int) (l % 10)]);
-			l = l / 10;
-		} while (l > 0);
 	}
 
 	/**
