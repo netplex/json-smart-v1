@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.minidev</groupId>
 	<artifactId>parent</artifactId>
-	<version>1.1</version>
+	<version>1.1.1</version>
 	<name>Minidev public super pom</name>
 	<description>minidev common properties.</description>
 	<packaging>pom</packaging>
@@ -48,6 +48,11 @@
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<extensions>true</extensions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
