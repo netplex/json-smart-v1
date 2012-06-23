@@ -52,6 +52,7 @@ class JSONParserString extends JSONParserMemory {
 	public Object parse(String in, ContainerFactory containerFactory, ContentHandler handler) throws ParseException {
 		this.in = in;
 		this.len = in.length();
+		this.pos = -1;
 		return parse(containerFactory, handler);
 	}
 

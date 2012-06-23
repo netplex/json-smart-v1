@@ -87,6 +87,28 @@ public class JSONValue {
 	 * @see JSONParser#parse(Reader)
 	 * @see #parseWithException(Reader)
 	 * 
+	 * @since 1.1.2
+	 * 
+	 * @return Instance of the following: JSONObject, JSONArray, String,
+	 *         java.lang.Number, java.lang.Boolean, null
+	 * 
+	 */
+	public static Object parse(byte[] in, int offset, int length) {
+		try {
+			return new JSONParser(DEFAULT_PERMISSIVE_MODE).parse(in, offset, length);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	/**
+	 * Parse JSON text into java object from the input source. Please use
+	 * parseWithException() if you don't want to ignore the exception. if you
+	 * want strict input check use parseStrict()
+	 * 
+	 * @see JSONParser#parse(Reader)
+	 * @see #parseWithException(Reader)
+	 * 
 	 * @since 1.0.9-2
 	 * 
 	 * @return Instance of the following: JSONObject, JSONArray, String,
@@ -149,6 +171,19 @@ public class JSONValue {
 	public static Object parseKeepingOrder(byte[] in) {
 		try {
 			return new JSONParser(DEFAULT_PERMISSIVE_MODE).parse(in, FACTORY_ORDERED);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	/**
+	 * Parse Json input to a java Object keeping element order
+	 * 
+	 * @since 1.1.2
+	 */
+	public static Object parseKeepingOrder(byte[] in, int offset, int length) {
+		try {
+			return new JSONParser(DEFAULT_PERMISSIVE_MODE).parse(in, offset, length, FACTORY_ORDERED);
 		} catch (Exception e) {
 			return null;
 		}
@@ -277,6 +312,20 @@ public class JSONValue {
 	 * 
 	 * @see JSONParser
 	 * 
+	 * @since 1.1.2
+	 * 
+	 * @return Instance of the following: JSONObject, JSONArray, String,
+	 *         java.lang.Number, java.lang.Boolean, null
+	 */
+	public static Object parseWithException(byte[] in, int offset, int length) throws IOException, ParseException {
+		return new JSONParser(DEFAULT_PERMISSIVE_MODE).parse(in, offset, length, FACTORY_SIMPLE);
+	}
+
+	/**
+	 * Parse JSON text into java object from the input source.
+	 * 
+	 * @see JSONParser
+	 * 
 	 * @since 1.0.9-2
 	 * 
 	 * @return Instance of the following: JSONObject, JSONArray, String,
@@ -358,6 +407,20 @@ public class JSONValue {
 	 */
 	public static Object parseStrict(byte[] s) throws ParseException {
 		return new JSONParser(MODE_RFC4627).parse(s, FACTORY_SIMPLE);
+	}
+
+	/**
+	 * Parse valid RFC4627 JSON text into java object from the input source.
+	 * 
+	 * @see JSONParser
+	 * 
+	 * @since 1.1.2
+	 * 
+	 * @return Instance of the following: JSONObject, JSONArray, String,
+	 *         java.lang.Number, java.lang.Boolean, null
+	 */
+	public static Object parseStrict(byte[] s, int offset, int length) throws ParseException {
+		return new JSONParser(MODE_RFC4627).parse(s, offset, length, FACTORY_SIMPLE);
 	}
 
 	/**

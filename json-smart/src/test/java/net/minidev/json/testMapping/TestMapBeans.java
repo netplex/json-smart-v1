@@ -11,7 +11,7 @@ public class TestMapBeans extends TestCase {
 	public void testSerObjInts() throws Exception {
 		String s = "{\"vint\":[1,2,3]}";
 		T1 r = new T1();
-		r.vint = new int[] {1,2,3};
+		r.vint = new int[] { 1, 2, 3 };
 		String s2 = JSONValue.toJSONString(r);
 		assertEquals(s, s2);
 	}
@@ -30,6 +30,22 @@ public class TestMapBeans extends TestCase {
 		T3 r = new T3();
 		r.data = new HashMap<TestMapBeans.ColorEnum, Integer>();
 		r.data.put(ColorEnum.red, 10);
+		String s2 = JSONValue.toJSONString(r);
+		assertEquals(s, s2);
+	}
+
+	public void testSerObjBool1() throws Exception {
+		String s = "{\"data\":true}";
+		T4 r = new T4();
+		r.data = true;
+		String s2 = JSONValue.toJSONString(r);
+		assertEquals(s, s2);
+	}
+	
+	public void testSerObjBool2() throws Exception {
+		String s = "{\"data\":true}";
+		T5 r = new T5();
+		r.data = true;
 		String s2 = JSONValue.toJSONString(r);
 		assertEquals(s, s2);
 	}
@@ -73,4 +89,29 @@ public class TestMapBeans extends TestCase {
 			this.data = data;
 		}
 	}
+
+	public static class T4 {
+		private boolean data;
+
+		public boolean getData() {
+			return data;
+		}
+
+		public void setData(boolean data) {
+			this.data = data;
+		}
+	}
+
+	public static class T5 {
+		private boolean data;
+
+		public boolean isData() {
+			return data;
+		}
+
+		public void setData(boolean data) {
+			this.data = data;
+		}
+	}
+
 }

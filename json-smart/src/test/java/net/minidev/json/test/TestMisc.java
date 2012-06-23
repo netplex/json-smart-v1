@@ -35,6 +35,12 @@ public class TestMisc extends TestCase {
 		assertEquals(o, 123);
 	}
 
+	public void testIntOffset() throws Exception {
+		String s = "AA 123";
+		Object o = JSONValue.parseWithException(s.getBytes(), 3, s.length());
+		assertEquals(o, 123);
+	}
+
 	public void testFloat() throws Exception {
 		String s = "123.5";
 		Object o = JSONValue.parseWithException(s);

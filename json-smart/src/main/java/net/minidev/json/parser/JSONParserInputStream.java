@@ -57,6 +57,7 @@ class JSONParserInputStream extends JSONParserStream {
 			throws ParseException {
 		//
 		this.in = in;
+		this.pos = -1;
 		return super.parse(containerFactory, handler);
 	}
 
