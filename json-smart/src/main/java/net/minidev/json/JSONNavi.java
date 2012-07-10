@@ -110,6 +110,12 @@ public class JSONNavi<T> {
 	public Object getCurrentObject() {
 		return current;
 	}
+	
+	public Collection<String> getKeys() {
+		if (current instanceof Map)
+			return ((Map)current).keySet();
+		return null;
+	}
 
 	public JSONNavi<?> at(String key) {
 		if (failure)
