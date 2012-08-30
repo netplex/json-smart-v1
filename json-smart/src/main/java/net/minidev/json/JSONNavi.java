@@ -140,6 +140,26 @@ public class JSONNavi<T> {
 		return this;
 	}
 
+	public Object get(String key) {
+		if (failure)
+			return this;
+		if (!isObject(current))
+			object();
+		if (!(current instanceof Map))
+			return failure("current node is not an Object", key);
+		return o(current).get(key);
+	}
+
+	public Object get(int index) {
+		if (failure)
+			return this;
+		if (!isArray(current))
+			array();
+		if (!(current instanceof List))
+			return failure("current node is not an List", index);
+		return a(current).get(index);
+	}
+	
 	public JSONNavi<T> set(String key, String value) {
 		object();
 		if (failure)
