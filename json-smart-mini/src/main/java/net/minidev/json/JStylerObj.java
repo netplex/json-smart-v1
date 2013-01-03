@@ -57,7 +57,8 @@ class JStylerObj {
 	 */
 	public static void escape(String s, Appendable sb) {
 		try {
-			for (int i = 0; i < s.length(); i++) {
+			int len = s.length();
+			for (int i = 0; i < len; i++) {
 				char ch = s.charAt(i);
 				switch (ch) {
 				case '"':
