@@ -117,10 +117,20 @@ public class JSONNavi<T> {
 		return null;
 	}
 
+	public int getSize() {
+		if (current == null)
+			return 0;
+		if (isArray())
+			return ((List<?>) current).size();
+		if (isObject())
+			return ((Map<?, ?>) current).size();
+		return 1;
+	}
+
 	public JSONNavi<?> at(String key) {
 		if (failure)
 			return this;
-		if (!isObject(current))
+		if (!isObject())
 			object();
 		if (!(current instanceof Map))
 			return failure("current node is not an Object", key);
@@ -143,7 +153,7 @@ public class JSONNavi<T> {
 	public Object get(String key) {
 		if (failure)
 			return this;
-		if (!isObject(current))
+		if (!isObject())
 			object();
 		if (!(current instanceof Map))
 			return failure("current node is not an Object", key);
@@ -153,7 +163,7 @@ public class JSONNavi<T> {
 	public Object get(int index) {
 		if (failure)
 			return this;
-		if (!isArray(current))
+		if (!isArray())
 			array();
 		if (!(current instanceof List))
 			return failure("current node is not an List", index);
@@ -395,9 +405,9 @@ public class JSONNavi<T> {
 		if (current == null && readonly)
 			failure("Can not create Object child in readonly", null);
 		if (current != null) {
-			if (isObject(current))
+			if (isObject())
 				return this;
-			if (isArray(current))
+			if (isArray())
 				failure("can not use Object feature on Array.", null);
 			failure("Can not use current possition as Object", null);
 		} else {
@@ -420,9 +430,9 @@ public class JSONNavi<T> {
 		if (current == null && readonly)
 			failure("Can not create Array child in readonly", null);
 		if (current != null) {
-			if (isArray(current))
+			if (isArray())
 				return this;
-			if (isObject(current))
+			if (isObject())
 				failure("can not use Object feature on Array.", null);
 			failure("Can not use current possition as Object", null);
 		} else {
@@ -486,6 +496,19 @@ public class JSONNavi<T> {
 				lst.add(null);
 			lst.set(index, current);
 		}
+	}
+	/**
+	 * is the current node is an array
+	 */
+	public boolean isArray() {
+		return isArray(current);
+	}
+
+	/**
+	 * is the current node is an object
+	 */
+	public boolean isObject() {
+		return isObject(current);
 	}
 
 	/**
