@@ -44,4 +44,10 @@ public class TestString extends TestCase {
 			assertEquals("Exception", "Exception");
 		}
 	}
+
+	public void testXescape() throws Exception {
+		String s = "{\"t\":\"\\x41\\x42\\x43\"}";
+		JSONObject o = (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE).parse(s);
+		assertEquals("ABC", o.get("t"));
+	}
 }
