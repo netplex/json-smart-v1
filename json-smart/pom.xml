@@ -24,7 +24,17 @@
     Java, JavaScript, Perl, Python, and many others.
     These properties make JSON an ideal data-interchange language.
 	</description>
-  
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<extensions>true</extensions>
+			</plugin>
+		</plugins>
+	</build>
+
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
