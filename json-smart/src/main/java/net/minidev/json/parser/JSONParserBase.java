@@ -69,7 +69,7 @@ abstract class JSONParserBase {
 	protected int pos;
 
 	/*
-	 * Parssing flags
+	 * Parsing flags
 	 */
 	protected final boolean acceptLeadinZero;
 	protected final boolean acceptNaN;
@@ -229,6 +229,11 @@ abstract class JSONParserBase {
 		return r;
 	}
 
+	/**
+	 * Read one char in this.c
+	 * 
+	 * @throws IOException
+	 */
 	abstract protected void read() throws IOException;
 
 	protected List<Object> readArray() throws ParseException, IOException {
@@ -433,11 +438,15 @@ abstract class JSONParserBase {
 				if (!acceptData)
 					throw new ParseException(pos, ERROR_UNEXPECTED_TOKEN, key);
 				handler.startObjectEntry(key);
-				while (c != ':' && c != EOI) {
-					read();
+				
+				//Skip spaces
+				skipSpace();
+				
+				if (c != ':') {
+					if (c == EOI)
+						throw new ParseException(pos - 1, ERROR_UNEXPECTED_EOF, null);
+					throw new ParseException(pos - 1, ERROR_UNEXPECTED_CHAR, c);
 				}
-				if (c == EOI)
-					throw new ParseException(pos - 1, ERROR_UNEXPECTED_EOF, null);
 				readNoEnd(); /* skip : */
 				Object duplicate = obj.put(key, readMain(stopValue));
 				if (duplicate != null)
