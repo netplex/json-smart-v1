@@ -1,6 +1,8 @@
 package net.minidev.json.test;
 
 import junit.framework.TestCase;
+import net.minidev.json.JSONObject;
+import net.minidev.json.JSONStyle;
 import net.minidev.json.JSONValue;
 
 public class BugReport extends TestCase {
@@ -13,4 +15,9 @@ public class BugReport extends TestCase {
 		assertEquals(JSONValue.isValidJsonStrict(test), false);
 	}
 
+	public static void main(String[] args) {
+		String test = "{'a':'b', 'c':'d'}";
+		JSONObject obj =  (JSONObject)JSONValue.parse(test);
+		System.out.println(obj.toString(JSONStyle.NO_COMPRESS));
+	}
 }

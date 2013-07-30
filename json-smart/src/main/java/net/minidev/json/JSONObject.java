@@ -89,7 +89,7 @@ public class JSONObject extends HashMap<String, Object> implements JSONAware, JS
 			JSONValue.escape(key, out, compression);
 			out.append('"');
 		}
-		out.append(':');
+		compression.objectEndOfKey(out);
 		if (value instanceof String) {
 			if (!compression.mustProtectValue((String) value))
 				out.append((String) value);
@@ -142,39 +142,27 @@ public class JSONObject extends HashMap<String, Object> implements JSONAware, JS
 	 * 
 	 * @see JSONValue#writeJSONString(Object, Appendable)
 	 */
-	public static void writeJSON(Map<String, ? extends Object> map, Appendable out, JSONStyle compression)
-			throws IOException {
+	public static void writeJSON(Map<String, ? extends Object> map, Appendable out, JSONStyle compression) throws IOException {
 		if (map == null) {
 			out.append("null");
 			return;
 		}
-		// JSONStyler styler = compression.getStyler();
-
 		boolean first = true;
-		// if (styler != null) {
-		// styler.objectIn();
-		// }
-
-		out.append('{');
+		compression.objectStart(out);
 		/**
 		 * do not use <String, Object> to handle non String key maps
 		 */
 		for (Map.Entry<?, ?> entry : map.entrySet()) {
-			if (first)
+			if (first) {
+				compression.objectFirstStart(out);
 				first = false;
-			else
-				out.append(',');
-			// if (styler != null)
-			// out.append(styler.getNewLine());
+			} else {
+				compression.objectNext(out);
+			}
 			writeJSONKV(entry.getKey().toString(), entry.getValue(), out, compression);
+			compression.objectElmStop(out);
 		}
-		// if (styler != null) {
-		// styler.objectOut();
-		// }
-		out.append('}');
-		// if (styler != null) {
-		// out.append(styler.getNewLine());
-		// }
+		compression.objectStop(out);
 	}
 
 	/**
@@ -221,7 +209,7 @@ public class JSONObject extends HashMap<String, Object> implements JSONAware, JS
 			}
 			if (value1.equals(value2))
 				continue;
-			if (value1.getClass() .equals(value2.getClass()))
+			if (value1.getClass().equals(value2.getClass()))
 				throw new RuntimeException("JSON merge can not merge two " + value1.getClass().getName() + " Object together");
 			throw new RuntimeException("JSON merge can not merge " + value1.getClass().getName() + " with " + value2.getClass().getName());
 		}

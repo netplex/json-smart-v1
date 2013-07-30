@@ -1,9 +1,17 @@
 package net.minidev.json.test;
 
 import junit.framework.TestCase;
+import net.minidev.json.JSONStyleIdent;
 import net.minidev.json.JSONValue;
 
 public class TestCompressor extends TestCase {
+	public static void main(String[] args) {
+		JSONStyleIdent i = new JSONStyleIdent();
+		String j = "{'a':{'b':'c','d':'e'},f:[1,2,'XYZ']}".replace('\'', '"');
+		Object obj = JSONValue.parse(j);
+		System.out.println(JSONValue.toJSONString(obj, i));
+	}
+
 	public void testCompressor() {
 		String j = "{'a':{'b':'c','d':'e'},f:[1,2,'XYZ']}".replace('\'', '"');
 		String sol = j.replace(" ", "").replace("\"", "");
