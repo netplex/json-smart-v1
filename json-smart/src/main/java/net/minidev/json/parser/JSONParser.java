@@ -223,7 +223,7 @@ public class JSONParser {
 	public Object parse(Reader in, ContainerFactory containerFactory, ContentHandler handler) throws ParseException {
 		if (pStream == null)
 			pStream = new JSONParserReader(mode);
-		return pStream.parse(in, containerFactory);
+		return pStream.parse(in, containerFactory, handler);
 	}
 
 	/**
@@ -254,7 +254,7 @@ public class JSONParser {
 			throws ParseException {
 		if (pSBintream == null)
 			pSBintream = new JSONParserInputStream(mode);
-		return pSBintream.parse(in, containerFactory);
+		return pSBintream.parse(in, containerFactory, handler);
 	}
 
 }
