@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.minidev</groupId>
 	<artifactId>parent</artifactId>
-	<version>1.1.1</version>
+	<version>1.2</version>
 	<name>Minidev public super pom</name>
 	<description>minidev common properties.</description>
 	<packaging>pom</packaging>
@@ -121,9 +121,9 @@
 	</build>
 
 	<scm>
-		<connection>scm:git:https://code.google.com/p/json-smart.v1/</connection>
-		<developerConnection>scm:git:https://code.google.com/p/json-smart.v1/</developerConnection>
-		<url>scm:git:https://code.google.com/p/json-smart.v1/</url>
+		<connection>scm:git:https://code.google.com/p/json-smart.v2/</connection>
+		<developerConnection>scm:git:https://code.google.com/p/json-smart.v2/</developerConnection>
+		<url>http://code.google.com/p/json-smart.v2/source/browse</url>
 	</scm>
 
 	<reporting>
@@ -258,27 +258,6 @@ https://oss.sonatype.org/content/repositories/snapshots
 	</profiles>
 	<dependencyManagement>
 		<dependencies>
-			<!-- <dependency> -->
-			<!-- <groupId>net.minidev</groupId> -->
-			<!-- <artifactId>commons</artifactId> -->
-			<!-- <version>${project.version}</version> -->
-			<!-- </dependency> -->
-			<!-- <dependency> -->
-			<!-- <groupId>net.minidev</groupId> -->
-			<!-- <artifactId>conf</artifactId> -->
-			<!-- <version>${project.version}</version> -->
-			<!-- </dependency> -->
-			<!-- <dependency> -->
-			<!-- <groupId>net.minidev</groupId> -->
-			<!-- <artifactId>csv</artifactId> -->
-			<!-- <version>${project.version}</version> -->
-			<!-- </dependency> -->
-			<!-- <dependency> -->
-			<!-- <groupId>net.minidev</groupId> -->
-			<!-- <artifactId>db</artifactId> -->
-			<!-- <version>${project.version}</version> -->
-			<!-- </dependency> -->
-
 			<dependency>
 				<groupId>net.minidev</groupId>
 				<artifactId>json-smart</artifactId>
@@ -289,66 +268,10 @@ https://oss.sonatype.org/content/repositories/snapshots
 				<artifactId>json-smart-mini</artifactId>
 				<version>${project.version}</version>
 			</dependency>
-			<!-- <dependency> -->
-			<!-- <groupId>net.minidev</groupId> -->
-			<!-- <artifactId>html</artifactId> -->
-			<!-- <version>${project.version}</version> -->
-			<!-- </dependency> -->
-			<!-- <dependency> -->
-			<!-- <groupId>net.minidev</groupId> -->
-			<!-- <artifactId>minibase</artifactId> -->
-			<!-- <version>${project.version}</version> -->
-			<!-- </dependency> -->
-			<!-- <dependency> -->
-			<!-- <groupId>net.minidev</groupId> -->
-			<!-- <artifactId>minibase-srv</artifactId> -->
-			<!-- <version>${project.version}</version> -->
-			<!-- </dependency> -->
-			<!-- <dependency> -->
-			<!-- <groupId>net.minidev</groupId> -->
-			<!-- <artifactId>ovh</artifactId> -->
-			<!-- <version>${project.version}</version> -->
-			<!-- </dependency> -->
-			<!-- <dependency> -->
-			<!-- <groupId>net.minidev</groupId> -->
-			<!-- <artifactId>types</artifactId> -->
-			<!-- <version>${project.version}</version> -->
-			<!-- </dependency> -->
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
 				<version>4.8.2</version>
-			</dependency>
-			<dependency>
-				<groupId>net.sourceforge.nekohtml</groupId>
-				<artifactId>nekohtml</artifactId>
-				<version>1.9.14</version>
-			</dependency>
-			<dependency>
-				<!-- http://mvnrepository.com/artifact/org.apache.httpcomponents -->
-				<groupId>org.apache.httpcomponents</groupId>
-				<artifactId>httpclient</artifactId>
-				<version>4.1</version>
-			</dependency>
-			<dependency>
-				<groupId>mysql</groupId>
-				<artifactId>mysql-connector-java</artifactId>
-				<version>5.1.23</version>
-			</dependency>
-			<dependency>
-				<groupId>commons-io</groupId>
-				<artifactId>commons-io</artifactId>
-				<version>2.0.1</version>
-			</dependency>
-			<dependency>
-				<groupId>com.mchange</groupId>
-				<artifactId>c3p0</artifactId>
-				<version>0.9.2</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-jdbc</artifactId>
-				<version>3.0.5.RELEASE</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
