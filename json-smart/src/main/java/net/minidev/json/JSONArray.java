@@ -64,34 +64,27 @@ public class JSONArray extends ArrayList<Object> implements List<Object>, JSONAw
 	 * @param list
 	 * @param out
 	 */
-	public static void writeJSONString(Iterable<? extends Object> list, Appendable out, JSONStyle compression)
-			throws IOException {
+	public static void writeJSONString(Iterable<? extends Object> list, Appendable out, JSONStyle compression) throws IOException {
 		if (list == null) {
 			out.append("null");
 			return;
 		}
-
-		// JSONStyler styler = compression.getStyler();
-		// if (styler != null) {
-		// styler.arrayIn();
-		// }
 		boolean first = true;
-		out.append('[');
+		compression.arrayStart(out);
 		for (Object value : list) {
-			if (first)
+			if (first) {
 				first = false;
-			else
-				out.append(',');
+				compression.arrayfirstObject(out);
+			} else {
+				compression.arrayNextElm(out);
+			}
 			if (value == null)
 				out.append("null");
 			else
 				JSONValue.writeJSONString(value, out, compression);
+			compression.arrayObjectEnd(out);
 		}
-		out.append(']');
-		// if (styler != null) {
-		// styler.arrayOut();
-		// out.append(styler.getNewLine());
-		// }
+		compression.arrayStop(out);
 	}
 
 	public static void writeJSONString(List<? extends Object> list, Appendable out) throws IOException {

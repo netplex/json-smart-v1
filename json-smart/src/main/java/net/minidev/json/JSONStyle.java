@@ -15,6 +15,8 @@ package net.minidev.json;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import java.io.IOException;
+
 import net.minidev.json.JStylerObj.MustProtect;
 import net.minidev.json.JStylerObj.StringProtector;
 
@@ -114,4 +116,78 @@ public class JSONStyle {
 	public void escape(String s, Appendable out) {
 		esc.escape(s, out);
 	}
+
+	/**
+	 * begin Object
+	 */
+	public void objectStart(Appendable out) throws IOException {
+		out.append('{');
+	}
+
+	/**
+	 * terminate Object
+	 */
+	public void objectStop(Appendable out) throws IOException {
+		out.append('}');
+	}
+
+	/**
+	 * Start the first Obeject element
+	 */
+	public void objectFirstStart(Appendable out) throws IOException {
+	}
+
+	/**
+	 * Start a new Object element
+	 */
+	public void objectNext(Appendable out) throws IOException {
+		out.append(',');
+	}
+
+	/**
+	 * End Of Object element
+	 */
+	public void objectElmStop(Appendable out) throws IOException {
+	}
+
+	/**
+	 * end of Key in json Object
+	 */
+	public void objectEndOfKey(Appendable out) throws IOException {
+		out.append(':');
+	}
+
+	/**
+	 * Array start
+	 */
+	public void arrayStart(Appendable out) throws IOException {
+		out.append('[');
+	}
+
+	/**
+	 * Array Done
+	 */
+	public void arrayStop(Appendable out) throws IOException {
+		out.append(']');
+	}
+
+	/**
+	 * Start the first Array element
+	 */
+	public void arrayfirstObject(Appendable out) throws IOException {
+	}
+
+	/**
+	 * Start a new Array element
+	 */
+	public void arrayNextElm(Appendable out) throws IOException {
+		out.append(',');
+	}
+
+	/**
+	 * End of an Array element
+	 */
+	public void arrayObjectEnd(Appendable out) throws IOException {
+	}
+
 }
