@@ -35,7 +35,7 @@ public class JSONStyle {
 	/**
 	 * AGRESSIVE have no effect without PROTECT_KEYS or PROTECT_VALUE
 	 * 
-	 * AGRESSIVE mode allows §Json-smart to not protect String containing
+	 * AGRESSIVE mode allows Json-smart to not protect String containing
 	 * special chars
 	 */
 	public final static int FLAG_AGRESSIVE = 8;
