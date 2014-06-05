@@ -28,7 +28,9 @@ import net.minidev.json.parser.ContainerFactory;
  * @since 1.0.9
  * 
  * @author Uriel Chemouni <uchemouni@gmail.com>
+ * 
  */
+@SuppressWarnings("unchecked")
 public class JSONNavi<T> {
 	private ContainerFactory factory;
 	private T root;
@@ -113,7 +115,7 @@ public class JSONNavi<T> {
 	
 	public Collection<String> getKeys() {
 		if (current instanceof Map)
-			return ((Map)current).keySet();
+			return ((Map<String, ?>)current).keySet();
 		return null;
 	}
 
@@ -532,7 +534,6 @@ public class JSONNavi<T> {
 	/**
 	 * internal cast to List
 	 */
-	@SuppressWarnings("unchecked")
 	private List<Object> a(Object obj) {
 		return (List<Object>) obj;
 	}
@@ -540,7 +541,6 @@ public class JSONNavi<T> {
 	/**
 	 * internal cast to Map
 	 */
-	@SuppressWarnings("unchecked")
 	private Map<String, Object> o(Object obj) {
 		return (Map<String, Object>) obj;
 	}
@@ -558,7 +558,6 @@ public class JSONNavi<T> {
 			return this;
 		if (!(current instanceof List))
 			return failure("current node is not an Array", index);
-		@SuppressWarnings("unchecked")
 		List<Object> lst = ((List<Object>) current);
 		if (index < 0) {
 			index = lst.size() + index;
@@ -592,7 +591,6 @@ public class JSONNavi<T> {
 			return this;
 		if (!(current instanceof List))
 			return failure("current node is not an Array", null);
-		@SuppressWarnings("unchecked")
 		List<Object> lst = ((List<Object>) current);
 		return at(lst.size());
 	}
