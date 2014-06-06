@@ -647,41 +647,45 @@ public class JSONValue {
 			out.append(']');
 		} else {
 			try {
-				Class<?> cls = value.getClass();
+				Class<?> nextClass = value.getClass();
 				boolean needSep = false;
-				Field[] fields = cls.getDeclaredFields();
 				out.append('{');
-				for (Field field : fields) {
-					int m = field.getModifiers();
-					if ((m & (Modifier.STATIC | Modifier.TRANSIENT | Modifier.FINAL)) > 0)
-						continue;
-					Object v = null;
-					if ((m & Modifier.PUBLIC) > 0) {
-						v = field.get(value);
-					} else {
-						String g = JSONUtil.getGetterName(field.getName());
-						Method mtd = null;
 
-						try {
-							mtd = cls.getDeclaredMethod(g);
-						} catch (Exception e) {
-						}
-						if (mtd == null) {
-							Class<?> c2 = field.getType();
-							if (c2 == Boolean.TYPE || c2 == Boolean.class) {
-								g = JSONUtil.getIsName(field.getName());
-								mtd = cls.getDeclaredMethod(g);
-							}
-						}
-						if (mtd == null)
+				while (nextClass != Object.class) {
+					Field[] fields = nextClass.getDeclaredFields();
+					for (Field field : fields) {
+						int m = field.getModifiers();
+						if ((m & (Modifier.STATIC | Modifier.TRANSIENT | Modifier.FINAL)) > 0)
 							continue;
-						v = mtd.invoke(value);
+						Object v = null;
+						if ((m & Modifier.PUBLIC) > 0) {
+							v = field.get(value);
+						} else {
+							String g = JSONUtil.getGetterName(field.getName());
+							Method mtd = null;
+
+							try {
+								mtd = nextClass.getDeclaredMethod(g);
+							} catch (Exception e) {
+							}
+							if (mtd == null) {
+								Class<?> c2 = field.getType();
+								if (c2 == Boolean.TYPE || c2 == Boolean.class) {
+									g = JSONUtil.getIsName(field.getName());
+									mtd = nextClass.getDeclaredMethod(g);
+								}
+							}
+							if (mtd == null)
+								continue;
+							v = mtd.invoke(value);
+						}
+						if (needSep)
+							out.append(',');
+						else
+							needSep = true;
+						JSONObject.writeJSONKV(field.getName(), v, out, compression);
 					}
-					if (needSep)
-						out.append(',');
-					else
-						needSep = true;
-					JSONObject.writeJSONKV(field.getName(), v, out, compression);
+					nextClass = nextClass.getSuperclass();
 				}
 				out.append('}');
 			} catch (Exception e) {
