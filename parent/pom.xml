@@ -121,9 +121,15 @@
 	</build>
 
 	<scm>
+		<!-- ON GIT HUB -->
+		<connection>scm:git:https://github.com/netplex/json-smart-v1.git</connection>
+		<developerConnection>scm:git:https://github.com/netplex/json-smart-v1.git</developerConnection>
+		<url>https://github.com/netplex/json-smart-v1</url>
+<!--
 		<connection>scm:git:https://code.google.com/p/json-smart.v1/</connection>
 		<developerConnection>scm:git:https://code.google.com/p/json-smart.v1/</developerConnection>
 		<url>http://code.google.com/p/json-smart.v1/source/browse</url>
+-->
 	</scm>
 
 	<reporting>
