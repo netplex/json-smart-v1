@@ -123,13 +123,7 @@ public class ContentHandlerCompressor implements ContentHandler {
 			out.append(',');
 
 		if (value instanceof String) {
-			if (!compression.mustProtectValue((String) value))
-				out.append((String) value);
-			else {
-				out.append('"');
-				JSONValue.escape((String) value, out, compression);
-				out.append('"');
-			}
+			compression.writeString(out, (String) value);
 		} else
 			JSONValue.writeJSONString(value, out, compression);
 		return false;

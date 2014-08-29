@@ -37,10 +37,11 @@ public class JSONStyle {
 	/**
 	 * AGRESSIVE have no effect without PROTECT_KEYS or PROTECT_VALUE
 	 * 
-	 * AGRESSIVE mode allows Json-smart to not protect String containing
-	 * special chars
+	 * AGRESSIVE mode allows Json-smart to not protect String containing special
+	 * chars
 	 */
 	public final static int FLAG_AGRESSIVE = 8;
+	public final static int FLAG_IGNORE_NULL = 16;
 
 	public final static JSONStyle NO_COMPRESS = new JSONStyle();
 	public final static JSONStyle MAX_COMPRESS = new JSONStyle(-1);
@@ -52,6 +53,7 @@ public class JSONStyle {
 	private boolean _protectKeys;
 	private boolean _protect4Web;
 	private boolean _protectValues;
+	private boolean _ignore_null;
 
 	private MustProtect mpKey;
 	private MustProtect mpValue;
@@ -62,7 +64,7 @@ public class JSONStyle {
 		_protectKeys = (FLAG & FLAG_PROTECT_KEYS) == 0;
 		_protectValues = (FLAG & FLAG_PROTECT_VALUES) == 0;
 		_protect4Web = (FLAG & FLAG_PROTECT_4WEB) == 0;
-
+		_ignore_null = (FLAG & FLAG_IGNORE_NULL) > 0;
 		MustProtect mp;
 		if ((FLAG & FLAG_AGRESSIVE) > 0)
 			mp = JStylerObj.MP_AGGRESIVE;
@@ -101,6 +103,10 @@ public class JSONStyle {
 		return _protect4Web;
 	}
 
+	public boolean ignoreNull() {
+		return _ignore_null;
+	}
+
 	public boolean indent() {
 		return false;
 	}
@@ -111,6 +117,16 @@ public class JSONStyle {
 
 	public boolean mustProtectValue(String s) {
 		return mpValue.mustBeProtect(s);
+	}
+
+	public void writeString(Appendable out, String value) throws IOException {
+		if (!this.mustProtectValue(value))
+			out.append(value);
+		else {
+			out.append('"');
+			JSONValue.escape(value, out, this);
+			out.append('"');
+		}
 	}
 
 	public void escape(String s, Appendable out) {

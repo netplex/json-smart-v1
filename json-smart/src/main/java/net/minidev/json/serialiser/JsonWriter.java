@@ -83,13 +83,7 @@ public class JsonWriter {
 				throws IOException {
 			@SuppressWarnings("rawtypes")
 			String s = ((Enum) value).name();
-			if (!compression.mustProtectValue(s))
-				out.append(s);
-			else {
-				out.append('"');
-				compression.escape(s, out);
-				out.append('"');
-			}
+			compression.writeString(out, s);
 		}
 	};
 
@@ -102,14 +96,17 @@ public class JsonWriter {
 			 * do not use <String, Object> to handle non String key maps
 			 */
 			for (Map.Entry<?, ?> entry : map.entrySet()) {
+				Object v = entry.getValue();
+				if (v == null && compression.ignoreNull())
+					continue;
 				if (first) {
 					compression.objectFirstStart(out);
 					first = false;
 				} else {
 					compression.objectNext(out);
 				}
-				writeJSONKV(entry.getKey().toString(), entry.getValue(), out, compression);
-				compression.objectElmStop(out);
+				JsonWriter.writeJSONKV(entry.getKey().toString(), v, out, compression);
+				// compression.objectElmStop(out);
 			}
 			compression.objectStop(out);
 		}
@@ -120,7 +117,7 @@ public class JsonWriter {
 			try {
 				Class<?> nextClass = value.getClass();
 				boolean needSep = false;
-				out.append('{');
+				compression.objectStart(out);
 				while (nextClass != Object.class) {
 					Field[] fields = nextClass.getDeclaredFields();
 					for (Field field : fields) {
@@ -149,15 +146,18 @@ public class JsonWriter {
 								continue;
 							v = mtd.invoke(value);
 						}
+						if (v == null && compression.ignoreNull())
+							continue;
 						if (needSep)
-							out.append(',');
+							compression.objectNext(out);
 						else
 							needSep = true;
-						writeJSONKV(field.getName(), v, out, compression);
+						JsonWriter.writeJSONKV(field.getName(), v, out, compression);
+						// compression.objectElmStop(out);
 					}
 					nextClass = nextClass.getSuperclass();
 				}
-				out.append('}');
+				compression.objectStop(out);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
@@ -166,13 +166,11 @@ public class JsonWriter {
 
 	final static public JsonWriterI<Object> arrayWriter = new JsonWriterI<Object>() {
 		public <E> void writeJSONString(E value, Appendable out, JSONStyle compression) throws IOException {
-			// Class<?> arrayClz = value.getClass();
-			// Class<?> c = arrayClz.getComponentType();
 			compression.arrayStart(out);
 			boolean needSep = false;
 			for (Object o : ((Object[]) value)) {
 				if (needSep)
-					out.append(',');
+					compression.objectNext(out);
 				else
 					needSep = true;
 				JSONValue.writeJSONString(o, out, compression);
@@ -184,13 +182,7 @@ public class JsonWriter {
 	public void init() {
 		register(new JsonWriterI<String>() {
 			public void writeJSONString(String value, Appendable out, JSONStyle compression) throws IOException {
-				if (!compression.mustProtectValue((String) value))
-					out.append((String) value);
-				else {
-					out.append('"');
-					JSONValue.escape((String) value, out, compression);
-					out.append('"');
-				}
+				compression.writeString(out, (String) value);
 			}
 		}, String.class);
 
@@ -254,7 +246,7 @@ public class JsonWriter {
 				compression.arrayStart(out);
 				for (int b : value) {
 					if (needSep)
-						out.append(',');
+						compression.objectNext(out);
 					else
 						needSep = true;
 					out.append(Integer.toString(b));
@@ -269,7 +261,7 @@ public class JsonWriter {
 				compression.arrayStart(out);
 				for (short b : value) {
 					if (needSep)
-						out.append(',');
+						compression.objectNext(out);
 					else
 						needSep = true;
 					out.append(Short.toString(b));
@@ -284,7 +276,7 @@ public class JsonWriter {
 				compression.arrayStart(out);
 				for (long b : value) {
 					if (needSep)
-						out.append(',');
+						compression.objectNext(out);
 					else
 						needSep = true;
 					out.append(Long.toString(b));
@@ -299,7 +291,7 @@ public class JsonWriter {
 				compression.arrayStart(out);
 				for (float b : value) {
 					if (needSep)
-						out.append(',');
+						compression.objectNext(out);
 					else
 						needSep = true;
 					out.append(Float.toString(b));
@@ -314,7 +306,7 @@ public class JsonWriter {
 				compression.arrayStart(out);
 				for (double b : value) {
 					if (needSep)
-						out.append(',');
+						compression.objectNext(out);
 					else
 						needSep = true;
 					out.append(Double.toString(b));
@@ -329,7 +321,7 @@ public class JsonWriter {
 				compression.arrayStart(out);
 				for (boolean b : value) {
 					if (needSep)
-						out.append(',');
+						compression.objectNext(out);
 					else
 						needSep = true;
 					out.append(Boolean.toString(b));
@@ -359,14 +351,9 @@ public class JsonWriter {
 		}
 		compression.objectEndOfKey(out);
 		if (value instanceof String) {
-			if (!compression.mustProtectValue((String) value))
-				out.append((String) value);
-			else {
-				out.append('"');
-				JSONValue.escape((String) value, out, compression);
-				out.append('"');
-			}
+			compression.writeString(out, (String) value);
 		} else
 			JSONValue.writeJSONString(value, out, compression);
+		compression.objectElmStop(out);
 	}
 }
