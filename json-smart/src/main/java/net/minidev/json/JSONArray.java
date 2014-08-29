@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minidev.json.serialiser.JsonWriter;
+
 /**
  * A JSON array. JSONObject supports java.util.List interface.
  * 
@@ -64,27 +66,13 @@ public class JSONArray extends ArrayList<Object> implements List<Object>, JSONAw
 	 * @param list
 	 * @param out
 	 */
-	public static void writeJSONString(Iterable<? extends Object> list, Appendable out, JSONStyle compression) throws IOException {
+	public static void writeJSONString(Iterable<? extends Object> list, Appendable out, JSONStyle compression)
+			throws IOException {
 		if (list == null) {
 			out.append("null");
 			return;
 		}
-		boolean first = true;
-		compression.arrayStart(out);
-		for (Object value : list) {
-			if (first) {
-				first = false;
-				compression.arrayfirstObject(out);
-			} else {
-				compression.arrayNextElm(out);
-			}
-			if (value == null)
-				out.append("null");
-			else
-				JSONValue.writeJSONString(value, out, compression);
-			compression.arrayObjectEnd(out);
-		}
-		compression.arrayStop(out);
+		JsonWriter.JSONIterableWriter.writeJSONString(list, out, compression);
 	}
 
 	public static void writeJSONString(List<? extends Object> list, Appendable out) throws IOException {

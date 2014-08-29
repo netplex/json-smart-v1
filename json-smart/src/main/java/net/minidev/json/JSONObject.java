@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.minidev.json.serialiser.JsonWriter;
+
 /**
  * A JSON object. Key value pairs are unordered. JSONObject supports
  * java.util.Map interface.
@@ -76,32 +78,6 @@ public class JSONObject extends HashMap<String, Object> implements JSONAware, JS
 		return sb.toString();
 	}
 
-	/**
-	 * Write a Key : value entry to a stream
-	 */
-	public static void writeJSONKV(String key, Object value, Appendable out, JSONStyle compression) throws IOException {
-		if (key == null)
-			out.append("null");
-		else if (!compression.mustProtectKey(key))
-			out.append(key);
-		else {
-			out.append('"');
-			JSONValue.escape(key, out, compression);
-			out.append('"');
-		}
-		compression.objectEndOfKey(out);
-		if (value instanceof String) {
-			if (!compression.mustProtectValue((String) value))
-				out.append((String) value);
-			else {
-				out.append('"');
-				JSONValue.escape((String) value, out, compression);
-				out.append('"');
-			}
-		} else
-			JSONValue.writeJSONString(value, out, compression);
-	}
-
 	// /**
 	// * return a Key:value entry as stream
 	// */
@@ -142,27 +118,13 @@ public class JSONObject extends HashMap<String, Object> implements JSONAware, JS
 	 * 
 	 * @see JSONValue#writeJSONString(Object, Appendable)
 	 */
-	public static void writeJSON(Map<String, ? extends Object> map, Appendable out, JSONStyle compression) throws IOException {
+	public static void writeJSON(Map<String, ? extends Object> map, Appendable out, JSONStyle compression)
+			throws IOException {
 		if (map == null) {
 			out.append("null");
 			return;
 		}
-		boolean first = true;
-		compression.objectStart(out);
-		/**
-		 * do not use <String, Object> to handle non String key maps
-		 */
-		for (Map.Entry<?, ?> entry : map.entrySet()) {
-			if (first) {
-				compression.objectFirstStart(out);
-				first = false;
-			} else {
-				compression.objectNext(out);
-			}
-			writeJSONKV(entry.getKey().toString(), entry.getValue(), out, compression);
-			compression.objectElmStop(out);
-		}
-		compression.objectStop(out);
+		JsonWriter.JSONMapWriter.writeJSONString(map, out, compression);
 	}
 
 	/**
@@ -210,8 +172,10 @@ public class JSONObject extends HashMap<String, Object> implements JSONAware, JS
 			if (value1.equals(value2))
 				continue;
 			if (value1.getClass().equals(value2.getClass()))
-				throw new RuntimeException("JSON merge can not merge two " + value1.getClass().getName() + " Object together");
-			throw new RuntimeException("JSON merge can not merge " + value1.getClass().getName() + " with " + value2.getClass().getName());
+				throw new RuntimeException("JSON merge can not merge two " + value1.getClass().getName()
+						+ " Object together");
+			throw new RuntimeException("JSON merge can not merge " + value1.getClass().getName() + " with "
+					+ value2.getClass().getName());
 		}
 		for (String key : o2.keySet()) {
 			if (o1.containsKey(key))

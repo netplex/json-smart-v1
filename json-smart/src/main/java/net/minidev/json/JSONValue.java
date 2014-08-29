@@ -23,10 +23,6 @@ import static net.minidev.json.parser.JSONParser.MODE_RFC4627;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +31,8 @@ import net.minidev.json.parser.ContentHandlerCompressor;
 import net.minidev.json.parser.FakeContainerFactory;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
+import net.minidev.json.serialiser.JsonWriter;
+import net.minidev.json.serialiser.JsonWriterI;
 
 /**
  * JSONValue is the helper class In most of case you should use those static
@@ -493,6 +491,8 @@ public class JSONValue {
 		writeJSONString(value, out, COMPRESSION);
 	}
 
+	public static JsonWriter base = new JsonWriter();
+
 	/**
 	 * Encode an object into JSON text and write it to out.
 	 * <p>
@@ -509,189 +509,33 @@ public class JSONValue {
 			out.append("null");
 			return;
 		}
-
-		if (value instanceof String) {
-			if (!compression.mustProtectValue((String) value))
-				out.append((String) value);
-			else {
-				out.append('"');
-				escape((String) value, out, compression);
-				out.append('"');
-			}
-			return;
-		}
-
-		if (value instanceof Number) {
-			if (value instanceof Double) {
-				if (((Double) value).isInfinite())
-					out.append("null");
+		Class<?> clz = value.getClass();
+		@SuppressWarnings("rawtypes")
+		JsonWriterI w = base.getWrite(clz);
+		if (w == null) {
+			if ((value instanceof JSONStreamAware)) {
+				if (value instanceof JSONStreamAwareEx)
+					w = JsonWriter.JSONStreamAwareExWriter;
 				else
-					out.append(value.toString());
-			} else if (value instanceof Float) {
-				if (((Float) value).isInfinite())
-					out.append("null");
+					w = JsonWriter.JSONStreamAwareWriter;
+			} else if ((value instanceof JSONAware)) {
+				if ((value instanceof JSONAwareEx))
+					w = JsonWriter.JSONJSONAwareExWriter;
 				else
-					out.append(value.toString());
-			} else {
-				out.append(value.toString());
-			}
-			return;
-		}
-
-		if (value instanceof Boolean) {
-			out.append(value.toString());
-		} else if ((value instanceof JSONStreamAware)) {
-			if (value instanceof JSONStreamAwareEx)
-				((JSONStreamAwareEx) value).writeJSONString(out, compression);
+					w = JsonWriter.JSONJSONAwareWriter;
+			} else if (value instanceof Map<?, ?>)
+				w = JsonWriter.JSONMapWriter;
+			else if (value instanceof Iterable<?>)
+				w = JsonWriter.JSONIterableWriter;
+			else if (value instanceof Enum<?>)
+				w = JsonWriter.EnumWriter;
+			else if (clz.isArray())
+				w = JsonWriter.arrayWriter;
 			else
-				((JSONStreamAware) value).writeJSONString(out);
-		} else if ((value instanceof JSONAware)) {
-			if ((value instanceof JSONAwareEx))
-				out.append(((JSONAwareEx) value).toJSONString(compression));
-			else
-				out.append(((JSONAware) value).toJSONString());
-		} else if (value instanceof Map<?, ?>) {
-			JSONObject.writeJSON((Map<String, Object>) value, out, compression);
-		} else if (value instanceof Iterable<?>) { // List
-			JSONArray.writeJSONString((Iterable<Object>) value, out, compression);
-		} else if (value instanceof Date) {
-			JSONValue.writeJSONString(value.toString(), out, compression);
-		} else if (value instanceof Enum<?>) {
-			@SuppressWarnings("rawtypes")
-			String s = ((Enum) value).name();
-			if (!compression.mustProtectValue(s))
-				out.append(s);
-			else {
-				out.append('"');
-				escape(s, out, compression);
-				out.append('"');
-			}
-			return;
-		} else if (value.getClass().isArray()) {
-			Class<?> arrayClz = value.getClass();
-			Class<?> c = arrayClz.getComponentType();
-
-			out.append('[');
-			boolean needSep = false;
-
-			if (c.isPrimitive()) {
-				if (c == int.class) {
-					for (int b : ((int[]) value)) {
-						if (needSep)
-							out.append(',');
-						else
-							needSep = true;
-						out.append(Integer.toString(b));
-					}
-				} else if (c == short.class) {
-					for (short b : ((short[]) value)) {
-						if (needSep)
-							out.append(',');
-						else
-							needSep = true;
-						out.append(Short.toString(b));
-					}
-				} else if (c == byte.class) {
-					for (byte b : ((byte[]) value)) {
-						if (needSep)
-							out.append(',');
-						else
-							needSep = true;
-						out.append(Byte.toString(b));
-					}
-				} else if (c == long.class) {
-					for (long b : ((long[]) value)) {
-						if (needSep)
-							out.append(',');
-						else
-							needSep = true;
-						out.append(Long.toString(b));
-					}
-				} else if (c == float.class) {
-					for (float b : ((float[]) value)) {
-						if (needSep)
-							out.append(',');
-						else
-							needSep = true;
-						out.append(Float.toString((float) b));
-					}
-				} else if (c == double.class) {
-					for (double b : ((double[]) value)) {
-						if (needSep)
-							out.append(',');
-						else
-							needSep = true;
-						out.append(Double.toString((double) b));
-					}
-				} else if (c == boolean.class) {
-					for (boolean b : ((boolean[]) value)) {
-						if (needSep)
-							out.append(',');
-						else
-							needSep = true;
-						if (b)
-							out.append("true");
-						else
-							out.append("false");
-					}
-				}
-			} else {
-				for (Object o : ((Object[]) value)) {
-					if (needSep)
-						out.append(',');
-					else
-						needSep = true;
-					writeJSONString(o, out, compression);
-				}
-			}
-			out.append(']');
-		} else {
-			try {
-				Class<?> nextClass = value.getClass();
-				boolean needSep = false;
-				out.append('{');
-
-				while (nextClass != Object.class) {
-					Field[] fields = nextClass.getDeclaredFields();
-					for (Field field : fields) {
-						int m = field.getModifiers();
-						if ((m & (Modifier.STATIC | Modifier.TRANSIENT | Modifier.FINAL)) > 0)
-							continue;
-						Object v = null;
-						if ((m & Modifier.PUBLIC) > 0) {
-							v = field.get(value);
-						} else {
-							String g = JSONUtil.getGetterName(field.getName());
-							Method mtd = null;
-
-							try {
-								mtd = nextClass.getDeclaredMethod(g);
-							} catch (Exception e) {
-							}
-							if (mtd == null) {
-								Class<?> c2 = field.getType();
-								if (c2 == Boolean.TYPE || c2 == Boolean.class) {
-									g = JSONUtil.getIsName(field.getName());
-									mtd = nextClass.getDeclaredMethod(g);
-								}
-							}
-							if (mtd == null)
-								continue;
-							v = mtd.invoke(value);
-						}
-						if (needSep)
-							out.append(',');
-						else
-							needSep = true;
-						JSONObject.writeJSONKV(field.getName(), v, out, compression);
-					}
-					nextClass = nextClass.getSuperclass();
-				}
-				out.append('}');
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			}
+				w = JsonWriter.beansWriter;
+			base.register(w, clz);
 		}
+		w.writeJSONString(value, out, compression);
 	}
 
 	/**
