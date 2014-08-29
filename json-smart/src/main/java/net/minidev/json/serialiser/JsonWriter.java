@@ -45,14 +45,14 @@ public class JsonWriter {
 	final static public JsonWriterI<JSONAwareEx> JSONJSONAwareExWriter = new JsonWriterI<JSONAwareEx>() {
 		public <E extends JSONAwareEx> void writeJSONString(E value, Appendable out, JSONStyle compression)
 				throws IOException {
-			out.append(((JSONAwareEx) value).toJSONString(compression));
+			out.append(value.toJSONString(compression));
 		}
 	};
 
 	final static public JsonWriterI<JSONAware> JSONJSONAwareWriter = new JsonWriterI<JSONAware>() {
 		public <E extends JSONAware> void writeJSONString(E value, Appendable out, JSONStyle compression)
 				throws IOException {
-			out.append(((JSONAware) value).toJSONString());
+			out.append(value.toJSONString());
 		}
 	};
 
@@ -166,85 +166,18 @@ public class JsonWriter {
 
 	final static public JsonWriterI<Object> arrayWriter = new JsonWriterI<Object>() {
 		public <E> void writeJSONString(E value, Appendable out, JSONStyle compression) throws IOException {
-
-			Class<?> arrayClz = value.getClass();
-			Class<?> c = arrayClz.getComponentType();
-
-			out.append('[');
+			// Class<?> arrayClz = value.getClass();
+			// Class<?> c = arrayClz.getComponentType();
+			compression.arrayStart(out);
 			boolean needSep = false;
-
-			if (c.isPrimitive()) {
-				if (c == int.class) {
-					for (int b : ((int[]) value)) {
-						if (needSep)
-							out.append(',');
-						else
-							needSep = true;
-						out.append(Integer.toString(b));
-					}
-				} else if (c == short.class) {
-					for (short b : ((short[]) value)) {
-						if (needSep)
-							out.append(',');
-						else
-							needSep = true;
-						out.append(Short.toString(b));
-					}
-				} else if (c == byte.class) {
-					for (byte b : ((byte[]) value)) {
-						if (needSep)
-							out.append(',');
-						else
-							needSep = true;
-						out.append(Byte.toString(b));
-					}
-				} else if (c == long.class) {
-					for (long b : ((long[]) value)) {
-						if (needSep)
-							out.append(',');
-						else
-							needSep = true;
-						out.append(Long.toString(b));
-					}
-				} else if (c == float.class) {
-					for (float b : ((float[]) value)) {
-						if (needSep)
-							out.append(',');
-						else
-							needSep = true;
-						out.append(Float.toString((float) b));
-					}
-				} else if (c == double.class) {
-					for (double b : ((double[]) value)) {
-						if (needSep)
-							out.append(',');
-						else
-							needSep = true;
-						out.append(Double.toString((double) b));
-					}
-				} else if (c == boolean.class) {
-					for (boolean b : ((boolean[]) value)) {
-						if (needSep)
-							out.append(',');
-						else
-							needSep = true;
-						if (b)
-							out.append("true");
-						else
-							out.append("false");
-					}
-				}
-			} else {
-				for (Object o : ((Object[]) value)) {
-					if (needSep)
-						out.append(',');
-					else
-						needSep = true;
-					writeJSONString(o, out, compression);
-				}
+			for (Object o : ((Object[]) value)) {
+				if (needSep)
+					out.append(',');
+				else
+					needSep = true;
+				JSONValue.writeJSONString(o, out, compression);
 			}
-			out.append(']');
-
+			compression.arrayStop(out);
 		}
 	};
 
@@ -261,6 +194,12 @@ public class JsonWriter {
 			}
 		}, String.class);
 
+		register(new JsonWriterI<Boolean>() {
+			public void writeJSONString(Boolean value, Appendable out, JSONStyle compression) throws IOException {
+				out.append(value.toString());
+			}
+		}, Boolean.class);
+
 		register(new JsonWriterI<Double>() {
 			public void writeJSONString(Double value, Appendable out, JSONStyle compression) throws IOException {
 				if (value.isInfinite())
@@ -270,8 +209,8 @@ public class JsonWriter {
 			}
 		}, Double.class);
 
-		register(new JsonWriterI<Double>() {
-			public void writeJSONString(Double value, Appendable out, JSONStyle compression) throws IOException {
+		register(new JsonWriterI<Date>() {
+			public void writeJSONString(Date value, Appendable out, JSONStyle compression) throws IOException {
 				out.append('"');
 				JSONValue.escape(value.toString(), out, compression);
 				out.append('"');
@@ -305,6 +244,99 @@ public class JsonWriter {
 			}
 		}, Boolean.class);
 
+		/**
+		 * Array
+		 */
+
+		register(new JsonWriterI<int[]>() {
+			public void writeJSONString(int[] value, Appendable out, JSONStyle compression) throws IOException {
+				boolean needSep = false;
+				compression.arrayStart(out);
+				for (int b : value) {
+					if (needSep)
+						out.append(',');
+					else
+						needSep = true;
+					out.append(Integer.toString(b));
+				}
+				compression.arrayStop(out);
+			}
+		}, int[].class);
+
+		register(new JsonWriterI<short[]>() {
+			public void writeJSONString(short[] value, Appendable out, JSONStyle compression) throws IOException {
+				boolean needSep = false;
+				compression.arrayStart(out);
+				for (short b : value) {
+					if (needSep)
+						out.append(',');
+					else
+						needSep = true;
+					out.append(Short.toString(b));
+				}
+				compression.arrayStop(out);
+			}
+		}, short[].class);
+
+		register(new JsonWriterI<long[]>() {
+			public void writeJSONString(long[] value, Appendable out, JSONStyle compression) throws IOException {
+				boolean needSep = false;
+				compression.arrayStart(out);
+				for (long b : value) {
+					if (needSep)
+						out.append(',');
+					else
+						needSep = true;
+					out.append(Long.toString(b));
+				}
+				compression.arrayStop(out);
+			}
+		}, long[].class);
+
+		register(new JsonWriterI<float[]>() {
+			public void writeJSONString(float[] value, Appendable out, JSONStyle compression) throws IOException {
+				boolean needSep = false;
+				compression.arrayStart(out);
+				for (float b : value) {
+					if (needSep)
+						out.append(',');
+					else
+						needSep = true;
+					out.append(Float.toString(b));
+				}
+				compression.arrayStop(out);
+			}
+		}, float[].class);
+
+		register(new JsonWriterI<double[]>() {
+			public void writeJSONString(double[] value, Appendable out, JSONStyle compression) throws IOException {
+				boolean needSep = false;
+				compression.arrayStart(out);
+				for (double b : value) {
+					if (needSep)
+						out.append(',');
+					else
+						needSep = true;
+					out.append(Double.toString(b));
+				}
+				compression.arrayStop(out);
+			}
+		}, double[].class);
+
+		register(new JsonWriterI<boolean[]>() {
+			public void writeJSONString(boolean[] value, Appendable out, JSONStyle compression) throws IOException {
+				boolean needSep = false;
+				compression.arrayStart(out);
+				for (boolean b : value) {
+					if (needSep)
+						out.append(',');
+					else
+						needSep = true;
+					out.append(Boolean.toString(b));
+				}
+				compression.arrayStop(out);
+			}
+		}, boolean[].class);
 	}
 
 	public <T> void register(JsonWriterI<T> w, Class<?>... cls) {
