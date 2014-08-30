@@ -41,6 +41,9 @@ public class JSONStyle {
 	 * chars
 	 */
 	public final static int FLAG_AGRESSIVE = 8;
+	/**
+	 * @since 1.3.1
+	 */
 	public final static int FLAG_IGNORE_NULL = 16;
 
 	public final static JSONStyle NO_COMPRESS = new JSONStyle();
