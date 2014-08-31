@@ -7,10 +7,12 @@ import java.lang.reflect.Modifier;
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 import net.minidev.json.JSONAware;
 import net.minidev.json.JSONAwareEx;
+import net.minidev.json.JSONStreamAware;
 import net.minidev.json.JSONStreamAwareEx;
 import net.minidev.json.JSONStyle;
 import net.minidev.json.JSONUtil;
@@ -18,10 +20,30 @@ import net.minidev.json.JSONValue;
 
 public class JsonWriter {
 	private HashMap<Class<?>, JsonWriterI<?>> data;
+	private LinkedList<WriterByInterface> writerInterfaces;
 
 	public JsonWriter() {
 		data = new HashMap<Class<?>, JsonWriterI<?>>();
+		writerInterfaces = new LinkedList<WriterByInterface>();
 		init();
+	}
+
+	static class WriterByInterface {
+		public Class<?> _interface;
+		public JsonWriterI<?> _writer;
+
+		public WriterByInterface(Class<?> _interface, JsonWriterI<?> _writer) {
+			this._interface = _interface;
+			this._writer = _writer;
+		}
+	}
+
+	public JsonWriterI getWriterByInterface(Class<?> clazz) {
+		for (WriterByInterface w : writerInterfaces) {
+			if (w._interface.isAssignableFrom(clazz))
+				return w._writer;
+		}
+		return null;
 	}
 
 	public JsonWriterI getWrite(Class cls) {
@@ -329,6 +351,22 @@ public class JsonWriter {
 				compression.arrayStop(out);
 			}
 		}, boolean[].class);
+
+		addInterfaceWriterLast(JSONStreamAwareEx.class, JsonWriter.JSONStreamAwareExWriter);
+		addInterfaceWriterLast(JSONStreamAware.class, JsonWriter.JSONStreamAwareWriter);
+		addInterfaceWriterLast(JSONAwareEx.class, JsonWriter.JSONJSONAwareExWriter);
+		addInterfaceWriterLast(JSONAware.class, JsonWriter.JSONJSONAwareWriter);
+		addInterfaceWriterLast(Map.class, JsonWriter.JSONMapWriter);
+		addInterfaceWriterLast(Iterable.class, JsonWriter.JSONIterableWriter);
+		addInterfaceWriterLast(Enum.class, JsonWriter.EnumWriter);
+	}
+
+	public void addInterfaceWriterFirst(Class<?> cls, JsonWriterI<?> writer) {
+		writerInterfaces.addFirst(new WriterByInterface(cls, writer));
+	}
+
+	public void addInterfaceWriterLast(Class<?> cls, JsonWriterI<?> writer) {
+		writerInterfaces.addLast(new WriterByInterface(cls, writer));
 	}
 
 	public <T> void register(JsonWriterI<T> w, Class<?>... cls) {

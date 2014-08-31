@@ -513,26 +513,13 @@ public class JSONValue {
 		@SuppressWarnings("rawtypes")
 		JsonWriterI w = base.getWrite(clz);
 		if (w == null) {
-			if ((value instanceof JSONStreamAware)) {
-				if (value instanceof JSONStreamAwareEx)
-					w = JsonWriter.JSONStreamAwareExWriter;
-				else
-					w = JsonWriter.JSONStreamAwareWriter;
-			} else if ((value instanceof JSONAware)) {
-				if ((value instanceof JSONAwareEx))
-					w = JsonWriter.JSONJSONAwareExWriter;
-				else
-					w = JsonWriter.JSONJSONAwareWriter;
-			} else if (value instanceof Map<?, ?>)
-				w = JsonWriter.JSONMapWriter;
-			else if (value instanceof Iterable<?>)
-				w = JsonWriter.JSONIterableWriter;
-			else if (value instanceof Enum<?>)
-				w = JsonWriter.EnumWriter;
-			else if (clz.isArray())
+			if (clz.isArray())
 				w = JsonWriter.arrayWriter;
-			else
-				w = JsonWriter.beansWriter;
+			else {
+				w = base.getWriterByInterface(value.getClass());
+				if (w == null)
+					w = JsonWriter.beansWriter;
+			}
 			base.register(w, clz);
 		}
 		w.writeJSONString(value, out, compression);
