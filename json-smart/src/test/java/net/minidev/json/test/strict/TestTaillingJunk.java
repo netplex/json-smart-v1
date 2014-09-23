@@ -13,19 +13,22 @@ public class TestTaillingJunk extends TestCase {
 
 	public void testTaillingSpace() throws Exception {
 		String s = "{\"t\":0}   ";
-		JSONObject o = (JSONObject) new JSONParser(JSONParser.MODE_STRICTEST).parse(s);
+		MustThrows.testInvalidJson(s, JSONParser.MODE_STRICTEST, ParseException.ERROR_UNEXPECTED_TOKEN);
+		
+		s = "{\"t\":0}   ";
+		JSONObject o = (JSONObject) new JSONParser(JSONParser.MODE_STRICTEST | JSONParser.ACCEPT_TAILLING_SPACE).parse(s);
 		assertEquals(o.get("t"), 0);
 	}
 
 	public void testTaillingSpace2() throws Exception {
 		String s = "{\"t\":0}   \r\n ";
-		JSONObject o = (JSONObject) new JSONParser(JSONParser.MODE_STRICTEST).parse(s);
+		JSONObject o = (JSONObject) new JSONParser(JSONParser.MODE_STRICTEST | JSONParser.ACCEPT_TAILLING_SPACE).parse(s);
 		assertEquals(o.get("t"), 0);
 	}
 
 	public void testTaillingData() throws Exception {
 		String s = "{\"t\":0}  0";
-		MustThrows.testStrictestInvalidJson(s, ParseException.ERROR_UNEXPECTED_TOKEN);
+		MustThrows.testInvalidJson(s, JSONParser.MODE_STRICTEST, ParseException.ERROR_UNEXPECTED_TOKEN);
 	}
 
 	public void testTaillingDataPermisive() throws Exception {
