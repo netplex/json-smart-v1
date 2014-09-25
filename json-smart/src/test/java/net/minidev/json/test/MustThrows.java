@@ -11,7 +11,7 @@ public class MustThrows {
 	}
 	
 	public static void testInvalidJson(String json, int permissifMode, int execptionType) throws Exception {
-		JSONParser p = new JSONParser(execptionType);
+		JSONParser p = new JSONParser(permissifMode);
 		try {
 			p.parse(json);
 			TestCase.assertFalse("Exception Should Occure parsing:" + json, true);
