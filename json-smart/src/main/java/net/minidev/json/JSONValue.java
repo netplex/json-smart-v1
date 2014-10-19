@@ -31,8 +31,8 @@ import net.minidev.json.parser.ContentHandlerCompressor;
 import net.minidev.json.parser.FakeContainerFactory;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
-import net.minidev.json.serialiser.JsonWriter;
-import net.minidev.json.serialiser.JsonWriterI;
+import net.minidev.json.reader.JsonWriter;
+import net.minidev.json.reader.JsonWriterI;
 
 /**
  * JSONValue is the helper class In most of case you should use those static
@@ -491,7 +491,7 @@ public class JSONValue {
 		writeJSONString(value, out, COMPRESSION);
 	}
 
-	public static JsonWriter base = new JsonWriter();
+	public static JsonWriter defaultWriter = new JsonWriter();
 
 	/**
 	 * Encode an object into JSON text and write it to out.
@@ -511,16 +511,18 @@ public class JSONValue {
 		}
 		Class<?> clz = value.getClass();
 		@SuppressWarnings("rawtypes")
-		JsonWriterI w = base.getWrite(clz);
+		JsonWriterI w = defaultWriter.getWrite(clz);
 		if (w == null) {
 			if (clz.isArray())
 				w = JsonWriter.arrayWriter;
 			else {
-				w = base.getWriterByInterface(value.getClass());
+				w = defaultWriter.getWriterByInterface(value.getClass());
 				if (w == null)
 					w = JsonWriter.beansWriter;
+				// w = JsonWriter.beansWriterASM;
+
 			}
-			base.register(w, clz);
+			defaultWriter.registerWriter(w, clz);
 		}
 		w.writeJSONString(value, out, compression);
 	}
