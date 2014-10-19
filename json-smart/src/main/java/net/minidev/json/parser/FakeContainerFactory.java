@@ -15,13 +15,11 @@ package net.minidev.json.parser;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import java.util.AbstractList;
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import net.minidev.json.parser.ContainerFactory;
 
 /**
  * Fake Container factory used for JSon check and SaX parsing
@@ -62,8 +60,10 @@ public class FakeContainerFactory implements ContainerFactory {
 
 	/**
 	 * dummy AbstractList
+	 * replace AbsractList by list to make it compile on jdk 1.7
 	 */
-	static class FackList extends AbstractList<Object> {
+	@SuppressWarnings("serial")
+	static class FackList extends ArrayList<Object> {
 		public boolean add(Object e) {
 			return false;
 		}
