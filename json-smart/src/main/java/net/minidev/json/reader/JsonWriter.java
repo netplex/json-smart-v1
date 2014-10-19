@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+
 //import net.minidev.asm.Accessor;
 //import net.minidev.asm.BeansAccess;
 import net.minidev.json.JSONAware;
@@ -41,6 +42,7 @@ public class JsonWriter {
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
 	public JsonWriterI getWriterByInterface(Class<?> clazz) {
 		for (WriterByInterface w : writerInterfaces) {
 			if (w._interface.isAssignableFrom(clazz))
@@ -49,6 +51,7 @@ public class JsonWriter {
 		return null;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public JsonWriterI getWrite(Class cls) {
 		return data.get(cls);
 	}
