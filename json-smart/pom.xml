@@ -5,6 +5,7 @@
 
 	<artifactId>json-smart</artifactId>
 	<packaging>bundle</packaging>
+	<version>1.3.2</version>
 
 	<parent>
 		<groupId>net.minidev</groupId>
