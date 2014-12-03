@@ -460,7 +460,7 @@ abstract class JSONParserBase {
 				//
 				//
 				//
-				//
+				skipSpace();
 				if (c == '}') {
 					read(); /* unstack */
 					handler.endObject();
@@ -472,8 +472,8 @@ abstract class JSONParserBase {
 				if (c == ',')
 					acceptData = needData = true;
 				else
-					acceptData = needData = false;
-				continue;
+					throw new ParseException(pos - 1, ERROR_UNEXPECTED_TOKEN, c);
+				//	acceptData = needData = false;
 			}
 		}
 	}
