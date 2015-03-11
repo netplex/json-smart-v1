@@ -4,11 +4,13 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 
 //import net.minidev.asm.Accessor;
 //import net.minidev.asm.BeansAccess;
@@ -281,7 +283,7 @@ public class JsonWriter {
 			public void writeJSONString(Number value, Appendable out, JSONStyle compression) throws IOException {
 				out.append(value.toString());
 			}
-		}, Integer.class, Long.class, Byte.class, Short.class, BigInteger.class);
+		}, Integer.class, Long.class, Byte.class, Short.class, BigInteger.class, BigDecimal.class);
 
 		registerWriter(new JsonWriterI<Boolean>() {
 			public void writeJSONString(Boolean value, Appendable out, JSONStyle compression) throws IOException {
