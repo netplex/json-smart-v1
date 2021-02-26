@@ -144,9 +144,9 @@ abstract class JSONParserBase {
 
 			return Double.parseDouble(xs); 	 
 
-		} catch(Exception e) {
-			throw new ParseException(pos, ERROR_UNEXPECTED_TOKEN, xs );
-      	}
+		} catch(Exception e){
+			throw new ParseException(pos, ERROR_UNEXPECTED_TOKEN, xs);	
+		} 
 	}
 
 	/**
