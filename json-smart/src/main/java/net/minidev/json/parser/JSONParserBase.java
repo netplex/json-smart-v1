@@ -132,11 +132,10 @@ abstract class JSONParserBase {
 	}
 
 	protected Number extractFloat() throws ParseException {
-
-            if (!acceptLeadinZero)
-				checkLeadinZero();
-			
-		try{		
+        if (!acceptLeadinZero)
+		    checkLeadinZero();
+		
+        try {		
 		    if (!useHiPrecisionFloat)
 				return Float.parseFloat(xs);
 				
