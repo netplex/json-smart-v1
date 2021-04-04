@@ -250,9 +250,13 @@ public class JSONParserStream {
 				return sb.toString().trim();
 			}
 			String num = sb.toString().trim();
-			if (num.length() > 18) // follow JSjonIJ parssing methode
-				return new BigDecimal(num);
-			return Double.parseDouble(num);
+			try {
+				if (num.length() > 18) // follow JSjonIJ parssing methode
+					return new BigDecimal(num);
+				return Double.parseDouble(num);
+			} catch (NumberFormatException e) {
+				throw new ParseException(pos, ERROR_UNEXPECTED_TOKEN, xs);	
+			}
 		}
 		sb.append('E');
 		read();
@@ -266,7 +270,11 @@ public class JSONParserStream {
 				skipNQString(stop);
 				return sb.toString().trim();
 			}
-			return Double.parseDouble(sb.toString().trim());
+			try {
+				return Double.parseDouble(sb.toString().trim());
+			} catch (NumberFormatException e) {
+				throw new ParseException(pos, ERROR_UNEXPECTED_TOKEN, xs);	
+			}
 		} else {
 			skipNQString(stop);
 			return sb.toString().trim();
