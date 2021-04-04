@@ -57,7 +57,6 @@ public class Issue26 extends TestCase {
 	public void testIssue26() {
 		App dbApp = new App();
 		dbApp.setSoftname("sssssssssss");
-		System.out.println();
 		assertTrue(JSONValue.toJSONString(dbApp).contains("sssssssssss"));
 	}
 

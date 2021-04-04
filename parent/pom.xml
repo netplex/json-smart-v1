@@ -148,18 +148,8 @@
 	</reporting>
 
 	<modules>
-		<!-- <module>../commons</module> -->
-		<!-- <module>../conf</module> -->
-		<!-- <module>../csv</module> -->
-		<!-- <module>../db</module> -->
-		<!-- <module>../html</module> -->
 		<module>../json-smart</module>
 		<!-- <module>../json-smart-mini</module> -->
-		<!-- <module>../minibase</module> -->
-		<!-- <module>../minibase-srv</module> -->
-		<!-- <module>../minibase-gae</module> -->
-		<!-- <module>../ovh</module> -->
-		<!-- <module>../types</module> -->
 	</modules>
 
 	<distributionManagement>
@@ -277,7 +267,7 @@
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
-				<version>[4.13.1,)</version>
+				<version>[4.13.2,)</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
