@@ -40,4 +40,15 @@ public class TestBigValue extends TestCase {
 		assertEquals(bigInt, obj.get("big"));
 		assertEquals(bigInt.getClass(), obj.get("big").getClass());
 	}
+	/**
+	 * https://github.com/netplex/json-smart-v1/issues/6
+	 */
+	@Test
+    public void testBigDouble() throws Exception {
+        String content = "{\"customDouble\": 3.14159265358979323846}";
+        System.out.printf("Input: %s\n", content);
+        JSONParser parser = new JSONParser(DEFAULT_PERMISSIVE_MODE);
+        JSONObject jwtContent = (JSONObject) parser.parse(content);
+        System.out.printf("Output: %s\n", jwtContent.toJSONString());
+    }
 }
