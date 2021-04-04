@@ -13,7 +13,7 @@
 		<relativePath>../parent/pom.xml</relativePath>
 	</parent>
 
-	<name>JSON Small and Fast Parser</name>
+	<name>JSON Small and Fast Parser mini edition</name>
 
 	<description>
     JSON (JavaScript Object Notation) is a lightweight data-interchange format.
