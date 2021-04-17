@@ -5,11 +5,12 @@
 
 	<artifactId>json-smart</artifactId>
 	<packaging>bundle</packaging>
+	<version>1.3.3</version>
 
 	<parent>
 		<groupId>net.minidev</groupId>
 		<artifactId>parent</artifactId>
-		<version>1.3.3</version>
+		<version>1.3.2</version>
 		<relativePath>../parent/pom.xml</relativePath>
 	</parent>
 
