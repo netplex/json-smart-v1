@@ -1,0 +1,12 @@
+path_classifiers:
+
+  # exclude tests
+  test:
+  - "**/src/test"
+
+extraction:
+  java:
+    index:
+      java_version: 8
+      build_command: "mvn clean package -DskipTests -Dmaven.javadoc.skip=true --file parent/pom.xml"
+
