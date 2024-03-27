@@ -480,6 +480,7 @@ abstract class JSONParserBase {
 				skipSpace();
 				if (c == '}') {
 					read(); /* unstack */
+					this.depth--;
 					handler.endObject();
 					return obj;
 				}
