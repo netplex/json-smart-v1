@@ -39,7 +39,12 @@ import java.util.Map;
  */
 abstract class JSONParserBase {
 	protected char c;
-	public final static byte EOI = 0x1A;
+	/**
+	 * hard coded maximal depth for JSON parsing
+	 */
+	public final static int MAX_DEPTH = 400;
+
+	protected int depth = 0;public final static byte EOI = 0x1A;
 	protected static final char MAX_STOP = 126; // '}' -> 125
 	//
 
@@ -247,6 +252,9 @@ abstract class JSONParserBase {
 		List<Object> obj = containerFactory.createArrayContainer();
 		if (c != '[')
 			throw new RuntimeException("Internal Error");
+		if (++this.depth > MAX_DEPTH) {
+			throw new ParseException(pos, ERROR_UNEXPECTED_JSON_DEPTH, c);
+		}
 		read();
 		boolean needData = false;
 		handler.startArray();
@@ -261,6 +269,7 @@ abstract class JSONParserBase {
 			case ']':
 				if (needData && !acceptUselessComma)
 					throw new ParseException(pos, ERROR_UNEXPECTED_CHAR, (char) c);
+				this.depth--;
 				read(); /* unstack */
 				handler.endArray();
 				return obj;
@@ -403,6 +412,9 @@ abstract class JSONParserBase {
 		Map<String, Object> obj = this.containerFactory.createObjectContainer();
 		if (c != '{')
 			throw new RuntimeException("Internal Error");
+		if (++this.depth > MAX_DEPTH) {
+			throw new ParseException(pos, ERROR_UNEXPECTED_JSON_DEPTH, c);
+		}
 		handler.startObject();
 		boolean needData = false;
 		boolean acceptData = true;
@@ -422,6 +434,7 @@ abstract class JSONParserBase {
 			case '}':
 				if (needData && !acceptUselessComma)
 					throw new ParseException(pos, ERROR_UNEXPECTED_CHAR, (char) c);
+				this.depth--;
 				read(); /* unstack */
 				handler.endObject();
 				return obj;
